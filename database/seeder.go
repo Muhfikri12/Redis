@@ -1,9 +1,11 @@
 package database
 
 import (
+
 	"log"
 	"time"
 	"voucher_system/models"
+
 
 	"gorm.io/gorm"
 )
@@ -182,6 +184,7 @@ func SeedAll(db *gorm.DB) {
 		},
 	}
 
+
 	for _, voucher := range vouchers {
 		if err := tx.Create(&voucher).Error; err != nil {
 			log.Printf("Failed to insert voucher %s: %v", voucher.VoucherCode, err)
@@ -194,4 +197,5 @@ func SeedAll(db *gorm.DB) {
 		log.Fatalf("Transaction commit failed: %v", err)
 	}
 	log.Println("Seeding completed successfully.")
+
 }
