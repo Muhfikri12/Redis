@@ -7,24 +7,24 @@ import (
 )
 
 type HTTPResponse struct {
-	Status      bool        `json:"status"`
-	ErrorCode   string      `json:"error_code,omitempty"`
-	Description string      `json:"description,omitempty"`
-	Data        interface{} `json:"data,omitempty"`
+	Status    bool        `json:"status"`
+	ErrorCode string      `json:"error_msg,omitempty"`
+	Message   string      `json:"message,omitempty"`
+	Data      interface{} `json:"data,omitempty"`
 }
 
-func ResponseOK(c *gin.Context, data interface{}, description string) {
+func ResponseOK(c *gin.Context, data interface{}, message string) {
 	c.JSON(http.StatusOK, HTTPResponse{
-		Status:      true,
-		Description: description,
-		Data:        data,
+		Status:  true,
+		Message: message,
+		Data:    data,
 	})
 }
 
-func ResponseError(c *gin.Context, errorCode string, description string, httpStatusCode int) {
+func ResponseError(c *gin.Context, errorCode string, message string, httpStatusCode int) {
 	c.JSON(httpStatusCode, HTTPResponse{
-		Status:      false,
-		ErrorCode:   errorCode,
-		Description: description,
+		Status:    false,
+		ErrorCode: errorCode,
+		Message:   message,
 	})
 }

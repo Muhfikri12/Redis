@@ -1,15 +1,20 @@
 package repository
 
-import "gorm.io/gorm"
+import (
+	"go.uber.org/zap"
+	"gorm.io/gorm"
+)
 
 type Repository struct {
-	// User UserRepository
-
+	Voucher VoucherRepository
+	Redeem  RedeemRepository
+	History HistoryRepository
 }
 
-func NewRepository(db *gorm.DB) Repository {
+func NewRepository(db *gorm.DB, log *zap.Logger) Repository {
 	return Repository{
-		// User: *NewUserRepository(db),
-
+		Voucher: NewVoucherRepository(db, log),
+		Redeem:  NewRedeemRepository(db, log),
+		History: NewHistoryRepository(db, log),
 	}
 }
