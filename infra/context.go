@@ -9,10 +9,12 @@ import (
 	"voucher_system/service"
 
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 type ServiceContext struct {
 	Cfg config.Config
+	DB  *gorm.DB
 	Ctl controller.Controller
 	Log *zap.Logger
 }
@@ -50,5 +52,5 @@ func NewServiceContext() (*ServiceContext, error) {
 	// instance controller
 	Ctl := controller.NewController(service, log)
 
-	return &ServiceContext{Cfg: config, Ctl: *Ctl, Log: log}, nil
+	return &ServiceContext{Cfg: config, DB: db, Ctl: *Ctl, Log: log}, nil
 }
