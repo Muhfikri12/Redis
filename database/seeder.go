@@ -1,9 +1,11 @@
 package database
 
 import (
+
 	"log"
 	"time"
 	"voucher_system/models"
+
 
 	"gorm.io/gorm"
 )
@@ -182,6 +184,7 @@ func SeedAll(db *gorm.DB) {
 		},
 	}
 
+
 	for _, voucher := range vouchers {
 		currentDate := time.Now()
 		if currentDate.After(voucher.EndDate) {
@@ -201,4 +204,5 @@ func SeedAll(db *gorm.DB) {
 		log.Fatalf("Transaction commit failed: %v", err)
 	}
 	log.Println("Seeding completed successfully.")
+
 }
