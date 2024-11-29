@@ -38,9 +38,9 @@ func ConnectDB(cfg config.Config) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to migrate database: %v", err)
 	}
 
-	// if err := SeedAll(db); err != nil {
-	// 	return nil, fmt.Errorf("failed to seed data")
-	// }
+	if err := SeedAll(db); err != nil {
+		return nil, fmt.Errorf("failed to seed data")
+	}
 
 	return db, nil
 }
