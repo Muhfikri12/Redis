@@ -22,7 +22,7 @@ type Voucher struct {
 	EndDate         time.Time  `gorm:"type:timestamp with time zone;not null" json:"end_date"`
 	ApplicableAreas []string   `gorm:"type:jsonb" json:"applicable_areas"`
 	Quota           int        `gorm:"default:0" json:"quota"`
-	Status          bool       `gorm:"default:true" json:"status"`
+	Status          bool       `gorm:"type:boolean" json:"status"`
 	CreatedAt       time.Time  `gorm:"autoCreateTime" json:"created_at,omitempty"`
 	UpdatedAt       time.Time  `gorm:"autoUpdateTime" json:"updated_at,omitempty"`
 	DeletedAt       *time.Time `gorm:"index" json:"deleted_at,omitempty"`

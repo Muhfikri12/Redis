@@ -40,8 +40,8 @@ func SeedAll(db *gorm.DB) {
 			DiscountValue:   10.0,
 			MinimumPurchase: 100.0,
 			PaymentMethods:  []string{"Credit Card", "PayPal"},
-			StartDate:       time.Now(),
-			EndDate:         time.Now().AddDate(0, 1, 0), // 1 month valid
+			StartDate:       time.Now().AddDate(0, 0, -5), // StartDate 5 days ago
+			EndDate:         time.Now().AddDate(0, 0, -1), // EndDate 1 day ago
 			ApplicableAreas: []string{"US", "Canada"},
 			Quota:           100,
 		},
@@ -183,6 +183,13 @@ func SeedAll(db *gorm.DB) {
 	}
 
 	for _, voucher := range vouchers {
+		currentDate := time.Now()
+		if currentDate.After(voucher.EndDate) {
+			voucher.Status = false
+		} else {
+			voucher.Status = currentDate.After(voucher.StartDate) && currentDate.Before(voucher.EndDate)
+		}
+
 		if err := tx.Create(&voucher).Error; err != nil {
 			log.Printf("Failed to insert voucher %s: %v", voucher.VoucherCode, err)
 			tx.Rollback()
