@@ -16,6 +16,7 @@ type ManageVoucherHandler interface {
 	SoftDeleteVoucher(c *gin.Context)
 	UpdateVoucher(c *gin.Context)
 	ShowRedeemPoints(c *gin.Context)
+	GetVouchersByQueryParams(c *gin.Context)
 }
 
 type ManagementVoucherHandler struct {
@@ -96,5 +97,23 @@ func (mh *ManagementVoucherHandler) ShowRedeemPoints(c *gin.Context) {
 
 	mh.log.Info("Redeem points retrieved successfully")
 	helper.ResponseOK(c, voucher, "Redeem points retrieved successfully")
+
+}
+
+func (mh *ManagementVoucherHandler) GetVouchersByQueryParams(c *gin.Context) {
+
+	status := c.Query("status")
+	area := c.Query("area")
+	voucher_type := c.Query("voucher_type")
+
+	voucher, err := mh.service.Manage.GetVouchersByQueryParams(status, area, voucher_type)
+	if err != nil {
+		mh.log.Error("Failed to Get Voucher List", zap.Error(err))
+		helper.ResponseError(c, "NOT FOUND", "Voucher Not Found", http.StatusNotFound)
+		return
+	}
+
+	mh.log.Info("Voucher retrieved successfully")
+	helper.ResponseOK(c, voucher, "Voucher retrieved successfully")
 
 }

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"encoding/json"
 	"fmt"
 	"voucher_system/models"
 
@@ -13,6 +14,7 @@ type ManagementVoucherInterface interface {
 	SoftDeleteVoucher(voucherID int) error
 	UpdateVoucher(voucher *models.Voucher, voucherID int) error
 	ShowRedeemPoints() (*[]RedeemPoint, error)
+	GetVouchersByQueryParams(status, area, voucher_type string) (*[]models.Voucher, error)
 }
 
 type ManagementVoucherRepo struct {
@@ -83,4 +85,57 @@ func (m *ManagementVoucherRepo) ShowRedeemPoints() (*[]RedeemPoint, error) {
 	}
 
 	return &voucher, nil
+}
+
+func (m *ManagementVoucherRepo) GetVouchersByQueryParams(status, area, voucher_type string) (*[]models.Voucher, error) {
+
+	var rawVouchers []struct {
+		models.Voucher
+		RawPaymentMethods  []byte `gorm:"column:payment_methods"`
+		RawApplicableAreas []byte `gorm:"column:applicable_areas"`
+	}
+
+	query := m.DB.Model(&models.Voucher{})
+
+	if area != "" {
+		query = query.Where("applicable_areas @> ?", fmt.Sprintf(`["%s"]`, area))
+	}
+
+	if status != "" {
+		if status == "active" {
+			query = query.Where("start_date <= NOW() AND end_date >= NOW()")
+		} else if status == "non-active" {
+			query = query.Where("end_date < NOW()")
+		}
+	}
+
+	if voucher_type != "" {
+		query = query.Where("voucher_type = ?", voucher_type)
+	}
+
+	err := query.Find(&rawVouchers).Error
+	if err != nil {
+		return nil, err
+	}
+
+	vouchers := make([]models.Voucher, 0, len(rawVouchers))
+	for _, rawVoucher := range rawVouchers {
+		v := rawVoucher.Voucher
+
+		if len(rawVoucher.RawPaymentMethods) > 0 {
+			if err := json.Unmarshal(rawVoucher.RawPaymentMethods, &v.PaymentMethods); err != nil {
+				return nil, err
+			}
+		}
+
+		if len(rawVoucher.RawApplicableAreas) > 0 {
+			if err := json.Unmarshal(rawVoucher.RawApplicableAreas, &v.ApplicableAreas); err != nil {
+				return nil, err
+			}
+		}
+		vouchers = append(vouchers, v)
+
+	}
+
+	return &vouchers, nil
 }

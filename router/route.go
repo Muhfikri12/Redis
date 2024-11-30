@@ -15,6 +15,7 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 		voucherRoutes.DELETE("/:id", ctx.Ctl.Manage.SoftDeleteVoucher)
 		voucherRoutes.PUT("/:id", ctx.Ctl.Manage.UpdateVoucher)
 		voucherRoutes.GET("/reedem-points", ctx.Ctl.Manage.ShowRedeemPoints)
+		voucherRoutes.GET("/", ctx.Ctl.Manage.GetVouchersByQueryParams)
 
 	}
 	return r
