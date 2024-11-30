@@ -1,15 +1,16 @@
 package repository
 
-import "gorm.io/gorm"
+import (
+	"go.uber.org/zap"
+	"gorm.io/gorm"
+)
 
 type Repository struct {
-	// User UserRepository
-
+	Manage ManagementVoucherInterface
 }
 
-func NewRepository(db *gorm.DB) Repository {
+func NewRepository(db *gorm.DB, log *zap.Logger) Repository {
 	return Repository{
-		// User: *NewUserRepository(db),
-
+		Manage: NewManagementVoucherRepo(db, log),
 	}
 }
