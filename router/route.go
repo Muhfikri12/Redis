@@ -12,6 +12,7 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 	voucherRoutes := r.Group("/vouchers")
 	{
 		voucherRoutes.POST("/", ctx.Ctl.Manage.CreateVoucher)
+		voucherRoutes.DELETE("/:id", ctx.Ctl.Manage.SoftDeleteVoucher)
 
 	}
 	return r

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 	"voucher_system/helper"
 	"voucher_system/models"
 	"voucher_system/service"
@@ -12,6 +13,7 @@ import (
 
 type ManageVoucherHandler interface {
 	CreateVoucher(c *gin.Context)
+	SoftDeleteVoucher(c *gin.Context)
 }
 
 type ManagementVoucherHandler struct {
@@ -43,4 +45,18 @@ func (mh *ManagementVoucherHandler) CreateVoucher(c *gin.Context) {
 
 	mh.log.Info("Create Voucher successfully")
 	helper.ResponseOK(c, voucher, "Created succesfully")
+}
+
+func (mh *ManagementVoucherHandler) SoftDeleteVoucher(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	err := mh.service.Manage.SoftDeleteVoucher(id)
+	if err != nil {
+		mh.log.Error("Failed to Deleted", zap.Error(err))
+		helper.ResponseError(c, "FAILED", "Failed to deleted Voucher", http.StatusInternalServerError)
+		return
+	}
+
+	mh.log.Info("Deleted Voucher successfully")
+	helper.ResponseOK(c, id, "Deleted succesfully")
 }
