@@ -10,6 +10,7 @@ import (
 type ManageVoucherService interface {
 	CreateVoucher(voucher *models.Voucher) error
 	SoftDeleteVoucher(voucherID int) error
+	UpdateVoucher(voucher *models.Voucher, voucherID int) error
 }
 
 type ManagementVoucherservice struct {
@@ -34,6 +35,16 @@ func (ms *ManagementVoucherservice) SoftDeleteVoucher(voucherID int) error {
 
 	if err := ms.repo.Manage.SoftDeleteVoucher(voucherID); err != nil {
 		ms.log.Error("Error from service soft-deletes: " + err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (ms *ManagementVoucherservice) UpdateVoucher(voucher *models.Voucher, voucherID int) error {
+
+	if err := ms.repo.Manage.UpdateVoucher(voucher, voucherID); err != nil {
+		ms.log.Error("Error from service Update Voucher: " + err.Error())
 		return err
 	}
 
