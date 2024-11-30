@@ -15,6 +15,7 @@ type ManagementVoucherInterface interface {
 	UpdateVoucher(voucher *models.Voucher, voucherID int) error
 	ShowRedeemPoints() (*[]RedeemPoint, error)
 	GetVouchersByQueryParams(status, area, voucher_type string) (*[]models.Voucher, error)
+	CreateRedeemVoucher(redeem *models.Redeem, points int) error
 }
 
 type ManagementVoucherRepo struct {
@@ -138,4 +139,65 @@ func (m *ManagementVoucherRepo) GetVouchersByQueryParams(status, area, voucher_t
 	}
 
 	return &vouchers, nil
+}
+
+func (m *ManagementVoucherRepo) CreateRedeemVoucher(redeem *models.Redeem, points int) error {
+
+	tx := m.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			m.log.Panic("Transaction rolled back due to panic", zap.Any("reason", r))
+		}
+	}()
+
+	var voucher struct {
+		Quota          int
+		PointsRequired int
+	}
+
+	err := tx.Model(&models.Voucher{}).
+		Where("id = ?", redeem.VoucherID).
+		Select("quota, points_required").
+		Scan(&voucher).Error
+	if err != nil {
+		tx.Rollback()
+		m.log.Error("Failed to fetch voucher data: ", zap.Error(err))
+		return err
+	}
+	fmt.Println(voucher.PointsRequired)
+
+	if voucher.Quota <= 0 {
+		tx.Rollback()
+		return fmt.Errorf("quota for voucher ID %d is not sufficient", redeem.VoucherID)
+	}
+
+	if points != voucher.PointsRequired {
+		tx.Rollback()
+		return fmt.Errorf("required points (%d) do not match provided points (%d)", voucher.PointsRequired, points)
+	}
+
+	err = tx.Create(redeem).Error
+	if err != nil {
+		tx.Rollback()
+		m.log.Error("Failed to create redeem: ", zap.Error(err))
+		return err
+	}
+
+	err = tx.Model(&models.Voucher{}).
+		Where("id = ?", redeem.VoucherID).
+		UpdateColumn("quota", gorm.Expr("quota - ?", 1)).Error
+	if err != nil {
+		tx.Rollback()
+		m.log.Error("Failed to decrement voucher quota: ", zap.Error(err))
+		return err
+	}
+
+	err = tx.Commit().Error
+	if err != nil {
+		m.log.Error("Failed to commit transaction: ", zap.Error(err))
+		return err
+	}
+
+	return nil
 }

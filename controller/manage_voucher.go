@@ -17,6 +17,7 @@ type ManageVoucherHandler interface {
 	UpdateVoucher(c *gin.Context)
 	ShowRedeemPoints(c *gin.Context)
 	GetVouchersByQueryParams(c *gin.Context)
+	CreateRedeemVoucher(c *gin.Context)
 }
 
 type ManagementVoucherHandler struct {
@@ -116,4 +117,34 @@ func (mh *ManagementVoucherHandler) GetVouchersByQueryParams(c *gin.Context) {
 	mh.log.Info("Voucher retrieved successfully")
 	helper.ResponseOK(c, voucher, "Voucher retrieved successfully")
 
+}
+
+func (mh *ManagementVoucherHandler) CreateRedeemVoucher(c *gin.Context) {
+	var payload struct {
+		VoucherID int `json:"voucher_id" binding:"required"`
+		UserID    int `json:"user_id" binding:"required"`
+		Points    int `json:"points" binding:"required"`
+	}
+
+	err := c.ShouldBindJSON(&payload)
+	if err != nil {
+		mh.log.Error("Invalid payload", zap.Error(err))
+		helper.ResponseError(c, "INVALID", "Invalid Payload: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	redeem := models.Redeem{
+		VoucherID: payload.VoucherID,
+		UserID:    payload.UserID,
+	}
+
+	err = mh.service.Manage.CreateRedeemVoucher(&redeem, payload.Points)
+	if err != nil {
+		mh.log.Error("Failed to create redeem voucher", zap.Error(err))
+		helper.ResponseError(c, "FAILED", "Failed to create redeem voucher: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	mh.log.Info("Create Redeem Voucher successfully")
+	helper.ResponseOK(c, redeem, "Created successfully")
 }

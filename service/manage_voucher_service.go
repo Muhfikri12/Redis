@@ -13,6 +13,7 @@ type ManageVoucherService interface {
 	UpdateVoucher(voucher *models.Voucher, voucherID int) error
 	ShowRedeemPoints() (*[]repository.RedeemPoint, error)
 	GetVouchersByQueryParams(status, area, voucher_type string) (*[]models.Voucher, error)
+	CreateRedeemVoucher(redeem *models.Redeem, points int) error
 }
 
 type ManagementVoucherservice struct {
@@ -73,4 +74,15 @@ func (ms *ManagementVoucherservice) GetVouchersByQueryParams(status, area, vouch
 	}
 
 	return vouchers, nil
+}
+
+func (ms *ManagementVoucherservice) CreateRedeemVoucher(redeem *models.Redeem, points int) error {
+
+	err := ms.repo.Manage.CreateRedeemVoucher(redeem, points)
+	if err != nil {
+		ms.log.Error("Error from service create redeem voucher: " + err.Error())
+		return err
+	}
+
+	return nil
 }

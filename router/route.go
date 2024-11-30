@@ -16,6 +16,7 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 		voucherRoutes.PUT("/:id", ctx.Ctl.Manage.UpdateVoucher)
 		voucherRoutes.GET("/reedem-points", ctx.Ctl.Manage.ShowRedeemPoints)
 		voucherRoutes.GET("/", ctx.Ctl.Manage.GetVouchersByQueryParams)
+		voucherRoutes.POST("/redeem", ctx.Ctl.Manage.CreateRedeemVoucher)
 
 	}
 	return r
