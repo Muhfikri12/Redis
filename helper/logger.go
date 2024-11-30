@@ -1,11 +1,12 @@
 package helper
 
 import (
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"log"
 	"os"
 	"voucher_system/config"
+
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func InitZapLogger(config config.Config) (*zap.Logger, error) {

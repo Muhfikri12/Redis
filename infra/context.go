@@ -44,10 +44,10 @@ func NewServiceContext() (*ServiceContext, error) {
 	}
 
 	// instance repository
-	repository := repository.NewRepository(db)
+	repository := repository.NewRepository(db, log)
 
 	// instance service
-	service := service.NewService(repository)
+	service := service.NewService(repository, log)
 
 	// instance controller
 	Ctl := controller.NewController(service, log)
