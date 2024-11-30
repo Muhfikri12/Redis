@@ -7,13 +7,13 @@ import (
 )
 
 type Controller struct {
-	// User UserController
-	Manage ManageVoucherHandler
+	Manage  ManageVoucherHandler
+	Voucher VoucherController
 }
 
 func NewController(service service.Service, logger *zap.Logger) *Controller {
 	return &Controller{
-		// User: *NewUserController(service.User, logger),
-		Manage: NewManagementVoucherHanlder(service, logger),
+		Manage:  NewManagementVoucherHanlder(service, logger),
+		Voucher: *NewVoucherController(service, logger),
 	}
 }

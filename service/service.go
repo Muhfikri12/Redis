@@ -7,13 +7,15 @@ import (
 )
 
 type Service struct {
-	// User UserService
-	Manage ManageVoucherService
+	Manage  ManageVoucherService
+	Voucher VoucherService
+	History HistoryService
 }
 
 func NewService(repo repository.Repository, log *zap.Logger) Service {
 	return Service{
-		// User: NewUserService(repo.User),
-		Manage: NewManagementVoucherService(repo, log),
+		Manage:  NewManagementVoucherService(repo, log),
+		Voucher: NewVoucherService(repo, log),
+		History: NewHistoryService(repo, log),
 	}
 }
