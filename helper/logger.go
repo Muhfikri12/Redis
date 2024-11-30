@@ -32,8 +32,6 @@ func InitZapLogger(config config.Config) (*zap.Logger, error) {
 		return nil, err
 	}
 
-	defer file.Close()
-
 	core := zapcore.NewTee(
 
 		zapcore.NewCore(

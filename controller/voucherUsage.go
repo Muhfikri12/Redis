@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"strconv"
+	"time"
 	"voucher_system/helper"
 	"voucher_system/service"
 
@@ -19,7 +20,7 @@ func NewVoucherController(service service.Service, log *zap.Logger) *VoucherCont
 	return &VoucherController{service: service, log: log}
 }
 
-func (c *VoucherController) GetVoucher(ctx *gin.Context) {
+func (c *VoucherController) FindVouchers(ctx *gin.Context) {
 	userID, err := strconv.Atoi(ctx.Param("user_id"))
 	if err != nil {
 		helper.ResponseError(ctx, err.Error(), "Invalid user ID", http.StatusBadRequest)
@@ -33,6 +34,8 @@ func (c *VoucherController) GetVoucher(ctx *gin.Context) {
 			helper.ResponseError(ctx, err.Error(), "", http.StatusBadRequest)
 			return
 		}
+		c.log.Error("Error fetching vouchers", zap.Error(err))
+		c.log.Debug("Error fetching vouchers", zap.Error(err))
 		helper.ResponseError(ctx, err.Error(), "", http.StatusInternalServerError)
 		return
 	}
@@ -45,32 +48,58 @@ func (c *VoucherController) GetVoucher(ctx *gin.Context) {
 }
 
 func (c *VoucherController) ValidateVoucher(ctx *gin.Context) {
-	var request struct {
-		VoucherCode       string  `json:"voucher_code"`
-		TransactionAmount float64 `json:"transaction_amount"`
-		ShippingAmount    float64 `json:"shipping_amount"`
-		Area              string  `json:"area"`
-		PaymentMethod     string  `json:"payment_method"`
-	}
-	if err := ctx.BindJSON(&request); err != nil {
-		helper.ResponseError(ctx, err.Error(), "Invalid input", http.StatusBadRequest)
-		return
-	}
-
-	voucher, benefit, err := c.service.Voucher.ValidateVoucher(request.VoucherCode, request.TransactionAmount, request.ShippingAmount, request.Area, request.PaymentMethod)
+	userID, err := strconv.Atoi(ctx.Param("user_id"))
 	if err != nil {
-		helper.ResponseError(ctx, err.Error(), "", http.StatusBadRequest)
+		helper.ResponseError(ctx, err.Error(), "Invalid user ID", http.StatusBadRequest)
 		return
 	}
 
-	result := gin.H{
-		"voucher":       voucher,
-		"benefit_value": benefit,
-		"status":        "valid",
+	// Validasi input
+	var request struct {
+		VoucherCode       string  `json:"voucher_code" binding:"required"`
+		TransactionAmount float64 `json:"transaction_amount" binding:"required"`
+		ShippingAmount    float64 `json:"shipping_amount" binding:"required"`
+		Area              string  `json:"area" binding:"required"`
+		PaymentMethod     string  `json:"payment_method" binding:"required"`
+		TransactionDate   string  `json:"transaction_date" binding:"required"`
 	}
-	
-	helper.ResponseOK(ctx, result, "")
+
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		helper.ResponseError(ctx, "Invalid input", err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	transactionDate, err := time.Parse("2006-01-02", request.TransactionDate)
+	if err != nil {
+		c.log.Error("Handler: Invalid date format", zap.Error(err))
+		helper.ResponseError(ctx, "Invalid date format", "Transaction date must be in format YYYY-MM-DD", http.StatusBadRequest)
+		return
+	}
+
+	// Call service to validate voucher
+	voucher, benefitValue, err := c.service.Voucher.ValidateVoucher(userID, request.VoucherCode, request.TransactionAmount, request.ShippingAmount, request.Area, request.PaymentMethod, transactionDate)
+	if err != nil {
+		c.log.Error("Error fetching voucher", zap.Error(err))
+		c.log.Debug("Error fetching voucher", zap.Error(err))
+		helper.ResponseError(ctx, "Voucher validation failed", err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var msg string
+	if voucher.Status {
+		msg = "valid"
+	} else {
+		msg = "invalid"
+	}
+
+	// Response result of validation
+	response := gin.H{
+		"benefit_value": benefitValue,
+		"status":        msg,
+	}
+	helper.ResponseOK(ctx, response, "Voucher is valid")
 }
+
 
 func (c *VoucherController) UseVoucher(ctx *gin.Context) {
 	var request struct {
@@ -82,17 +111,19 @@ func (c *VoucherController) UseVoucher(ctx *gin.Context) {
 	}
 
 	if err := ctx.BindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		c.log.Error("Error invalid input", zap.Error(err))
+		c.log.Debug("Error invalid input", zap.Error(err))
+		helper.ResponseError(ctx, "Invalid input", err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	err := c.service.Voucher.UseVoucher(request.UserID, request.VoucherCode, request.TransactionAmount, request.PaymentMethod, request.Area)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.log.Error("Error failed used voucher", zap.Error(err))
+		c.log.Debug("Error failed used voucher", zap.Error(err))
+		helper.ResponseError(ctx, "Failed used voucher", err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"status": "voucher used successfully",
-	})
+	helper.ResponseOK(ctx, nil, "voucher used successfully")
+	
 }

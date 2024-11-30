@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"voucher_system/models"
 
 	"go.uber.org/zap"
@@ -8,8 +9,8 @@ import (
 )
 
 type RedeemRepository interface {
-	CreateRedeem(redeem *models.Redeem) error
-	FindByUserAndVoucher(userID int, voucherID int) (*models.Redeem, error)
+	FindUsersByVoucherCode(voucherCode string) ([]models.Redeem, error)
+	FindRedeemHistoryByUser(userID int) ([]models.Redeem, error)
 }
 
 type redeemRepository struct {
@@ -21,15 +22,42 @@ func NewRedeemRepository(db *gorm.DB, log *zap.Logger) RedeemRepository {
 	return &redeemRepository{DB: db, log: log}
 }
 
-func (r *redeemRepository) CreateRedeem(redeem *models.Redeem) error {
-	return r.DB.Create(redeem).Error
+
+func (r *redeemRepository) FindUsersByVoucherCode(voucherCode string) ([]models.Redeem, error) {
+	var redeems []models.Redeem
+
+	// Debug log untuk memastikan input
+	r.log.Info("Fetching users by voucher code", zap.String("voucher_code", voucherCode))
+
+	// Query dengan preloading untuk memastikan hubungan table
+	err := r.DB.Table("redeems").
+		Select("redeems.*").
+		Joins("JOIN vouchers ON vouchers.id = redeems.voucher_id").
+		Where("vouchers.voucher_code = ?", voucherCode).
+		Find(&redeems).Error
+
+	if err != nil {
+		r.log.Error("Error fetching users by voucher code", zap.Error(err))
+	}
+
+	if len(redeems) == 0 {
+        return nil, errors.New("no users found for the given voucher code")
+    }
+	// Info log untuk hasil query
+	r.log.Info("Query result", zap.Any("redeems", redeems))
+
+	return redeems, err
 }
 
-func (r *redeemRepository) FindByUserAndVoucher(userID int, voucherID int) (*models.Redeem, error) {
-	var redeem models.Redeem
-	err := r.DB.Where("user_id = ? AND voucher_id = ?", userID, voucherID).First(&redeem).Error
+func (r *redeemRepository) FindRedeemHistoryByUser(userID int) ([]models.Redeem, error) {
+	var redeems []models.Redeem
+	err := r.DB.Where("user_id = ?", userID).Find(&redeems).Error
 	if err != nil {
-		return nil, err
+		r.log.Error("Error fetching redeem voucher by users", zap.Error(err))
 	}
-	return &redeem, nil
+
+	if len(redeems) == 0 {
+        return nil, errors.New("no voucher exchange history found")
+    }
+	return redeems, err
 }

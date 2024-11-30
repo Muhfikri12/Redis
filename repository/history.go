@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"voucher_system/models"
 
 	"go.uber.org/zap"
@@ -9,7 +10,7 @@ import (
 
 type HistoryRepository interface {
 	CreateHistory(history *models.History) error
-	FindByUserID(userID int) ([]models.History, error)
+	FindUsageHistoryByUser(userID int) ([]models.History, error)
 }
 
 type historyRepository struct {
@@ -25,11 +26,15 @@ func (r *historyRepository) CreateHistory(history *models.History) error {
 	return r.DB.Create(history).Error
 }
 
-func (r *historyRepository) FindByUserID(userID int) ([]models.History, error) {
+func (r *historyRepository) FindUsageHistoryByUser(userID int) ([]models.History, error) {
 	var histories []models.History
 	err := r.DB.Where("user_id = ?", userID).Find(&histories).Error
 	if err != nil {
-		return nil, err
+		r.log.Error("Error fetching usage voucher by user", zap.Error(err))
+	}
+
+	if len(histories) == 0 {
+		return nil, errors.New("no voucher usage history found")
 	}
 	return histories, nil
 }

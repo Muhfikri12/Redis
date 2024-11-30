@@ -12,58 +12,68 @@ import (
 
 type VoucherService interface {
 	FindVouchers(userID int, voucherType string) ([]*models.Voucher, error)
-	ValidateVoucher(voucherCode string, transactionAmount float64, shippingAmount float64, area string, paymentMethod string) (*models.Voucher, float64, error)
+	ValidateVoucher(userID int, voucherCode string, transactionAmount float64, shippingAmount float64, area string, paymentMethod string, transactionDate time.Time) (*models.Voucher, float64, error)
 	UseVoucher(userID int, voucherCode string, transactionAmount float64, paymentMethod string, area string) error
 }
 
 type voucherService struct {
 	repo repository.Repository
-	log *zap.Logger
-
+	log  *zap.Logger
 }
 
 func NewVoucherService(repo repository.Repository, log *zap.Logger) VoucherService {
 	return &voucherService{
 		repo: repo,
-		log: log,
+		log:  log,
 	}
 }
 
 func (s *voucherService) FindVouchers(userID int, voucherType string) ([]*models.Voucher, error) {
+	s.log.Info("Finding vouchers", zap.Int("userID", userID), zap.String("voucherType", voucherType))
 	vouchers, err := s.repo.Voucher.FindAll(userID, voucherType)
 	if err != nil {
+		s.log.Error("Error finding vouchers", zap.Error(err))
 		return nil, err
 	}
 	if len(vouchers) == 0 {
+		s.log.Info("No vouchers available", zap.Int("userID", userID))
 		return nil, errors.New("no vouchers available")
 	}
+
+	s.log.Info("Vouchers found", zap.Int("voucherCount", len(vouchers)))
 	return vouchers, nil
 }
 
-func (s *voucherService) ValidateVoucher(voucherCode string, transactionAmount float64, shippingAmount float64, area string, paymentMethod string) (*models.Voucher, float64, error) {
-	currentDate := time.Now()
-	voucher, err := s.repo.Voucher.FindValidVoucher(voucherCode, area, transactionAmount, paymentMethod, currentDate)
+func (s *voucherService) ValidateVoucher(userID int, voucherCode string, transactionAmount float64, shippingAmount float64, area string, paymentMethod string, transactionDate time.Time) (*models.Voucher, float64, error) {
+	s.log.Info("Validating voucher", zap.Int("userID", userID), zap.String("voucherCode", voucherCode), zap.Float64("transactionAmount", transactionAmount))
+
+	voucher, err := s.repo.Voucher.FindValidVoucher(userID, voucherCode, area, transactionAmount, shippingAmount, paymentMethod, transactionDate)
 	if err != nil {
+		s.log.Error("Voucher validation failed", zap.String("voucherCode", voucherCode), zap.Error(err))
 		return nil, 0, err
 	}
 
-	// Calculate the benefit value (discount value)
-	benefitValue := voucher.DiscountValue
+	var benefitValue float64
+	discountValueStr := fmt.Sprintf("%.0f", voucher.DiscountValue)
 	if voucher.VoucherCategory == "Free Shipping" {
 		benefitValue = shippingAmount
+	} else if len(discountValueStr) > 4 {
+		benefitValue = voucher.DiscountValue
+	} else {
+		benefitValue = (voucher.DiscountValue / 100) * transactionAmount
 	}
 
+	s.log.Info("Voucher validated successfully", zap.String("voucherCode", voucherCode), zap.Float64("benefitValue", benefitValue))
 	return voucher, benefitValue, nil
 }
 
 func (s *voucherService) UseVoucher(userID int, voucherCode string, transactionAmount float64, paymentMethod string, area string) error {
-	// Validate the voucher
-	voucher, benefitValue, err := s.ValidateVoucher(voucherCode, transactionAmount, 0, area, paymentMethod)
+
+	voucher, benefitValue, err := s.ValidateVoucher(userID, voucherCode, transactionAmount, 0, area, paymentMethod, time.Now())
 	if err != nil {
 		return err
 	}
 
-	// Save voucher usage history
 	history := &models.History{
 		UserID:            userID,
 		VoucherID:         voucher.ID,
@@ -77,7 +87,6 @@ func (s *voucherService) UseVoucher(userID int, voucherCode string, transactionA
 		return err
 	}
 
-	// Update voucher quota
 	newQuota := voucher.Quota - 1
 	if newQuota < 0 {
 		return fmt.Errorf("voucher quota exceeded")
@@ -88,11 +97,5 @@ func (s *voucherService) UseVoucher(userID int, voucherCode string, transactionA
 		return err
 	}
 
-	// Log the voucher redemption
-	redeem := &models.Redeem{
-		UserID:     userID,
-		VoucherID:  voucher.ID,
-		RedeemDate: time.Now(),
-	}
-	return s.repo.Redeem.CreateRedeem(redeem)
+	return nil
 }
