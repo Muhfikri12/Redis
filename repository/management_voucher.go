@@ -12,6 +12,7 @@ type ManagementVoucherInterface interface {
 	CreateVoucher(voucher *models.Voucher) error
 	SoftDeleteVoucher(voucherID int) error
 	UpdateVoucher(voucher *models.Voucher, voucherID int) error
+	ShowRedeemPoints() (*[]RedeemPoint, error)
 }
 
 type ManagementVoucherRepo struct {
@@ -59,4 +60,27 @@ func (m *ManagementVoucherRepo) UpdateVoucher(voucher *models.Voucher, voucherID
 	}
 
 	return nil
+}
+
+type RedeemPoint struct {
+	VoucherName    string  `json:"voucher_name"`
+	PointsRequired int     `json:"points_required"`
+	DiscountValue  float64 `json:"discount_value"`
+}
+
+func (m *ManagementVoucherRepo) ShowRedeemPoints() (*[]RedeemPoint, error) {
+
+	voucher := []RedeemPoint{}
+
+	query := m.DB.
+		Table("vouchers as v").
+		Select(`v.voucher_name, v.discount_value, v.points_required`).
+		Where("voucher_type = ?", "redeem points")
+
+	err := query.Find(&voucher).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &voucher, nil
 }

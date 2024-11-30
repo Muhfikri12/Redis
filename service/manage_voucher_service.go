@@ -11,6 +11,7 @@ type ManageVoucherService interface {
 	CreateVoucher(voucher *models.Voucher) error
 	SoftDeleteVoucher(voucherID int) error
 	UpdateVoucher(voucher *models.Voucher, voucherID int) error
+	ShowRedeemPoints() (*[]repository.RedeemPoint, error)
 }
 
 type ManagementVoucherservice struct {
@@ -49,4 +50,15 @@ func (ms *ManagementVoucherservice) UpdateVoucher(voucher *models.Voucher, vouch
 	}
 
 	return nil
+}
+
+func (ms *ManagementVoucherservice) ShowRedeemPoints() (*[]repository.RedeemPoint, error) {
+
+	vouchers, err := ms.repo.Manage.ShowRedeemPoints()
+	if err != nil {
+		ms.log.Error("Error from service Show redeem points: " + err.Error())
+		return nil, err
+	}
+
+	return vouchers, nil
 }

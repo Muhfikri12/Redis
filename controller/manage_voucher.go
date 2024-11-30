@@ -15,6 +15,7 @@ type ManageVoucherHandler interface {
 	CreateVoucher(c *gin.Context)
 	SoftDeleteVoucher(c *gin.Context)
 	UpdateVoucher(c *gin.Context)
+	ShowRedeemPoints(c *gin.Context)
 }
 
 type ManagementVoucherHandler struct {
@@ -82,4 +83,18 @@ func (mh *ManagementVoucherHandler) UpdateVoucher(c *gin.Context) {
 
 	mh.log.Info("Updated Voucher successfully")
 	helper.ResponseOK(c, id, "updated succesfully")
+}
+
+func (mh *ManagementVoucherHandler) ShowRedeemPoints(c *gin.Context) {
+
+	voucher, err := mh.service.Manage.ShowRedeemPoints()
+	if err != nil {
+		mh.log.Error("Failed to Get Reedem Points List", zap.Error(err))
+		helper.ResponseError(c, "NOT FOUND", "Reedem Points List Not Found", http.StatusNotFound)
+		return
+	}
+
+	mh.log.Info("Redeem points retrieved successfully")
+	helper.ResponseOK(c, voucher, "Redeem points retrieved successfully")
+
 }
