@@ -12,7 +12,6 @@ type ManagementVoucherServiceMock struct {
 }
 
 func (m *ManagementVoucherServiceMock) CreateVoucher(voucher *models.Voucher) error {
-
 	args := m.Called(voucher)
 	return args.Error(0)
 }
@@ -29,8 +28,8 @@ func (m *ManagementVoucherServiceMock) UpdateVoucher(voucher *models.Voucher, vo
 
 func (m *ManagementVoucherServiceMock) ShowRedeemPoints() (*[]managementvoucher.RedeemPoint, error) {
 	args := m.Called()
-	if points := args.Get(0); points != nil {
-		return points.(*[]managementvoucher.RedeemPoint), args.Error(1)
+	if points, ok := args.Get(0).(*[]managementvoucher.RedeemPoint); ok {
+		return points, args.Error(1)
 	}
 	return nil, args.Error(1)
 }

@@ -36,14 +36,14 @@ func (mh *ManagementVoucherHandler) CreateVoucher(c *gin.Context) {
 	err := c.ShouldBindJSON(&voucher)
 	if err != nil {
 		mh.log.Error("Invalid payload", zap.Error(err))
-		helper.ResponseError(c, "INVALID", "Invalid Payload"+err.Error(), http.StatusBadRequest)
+		helper.ResponseError(c, "INVALID", "Invalid Payload"+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	err = mh.service.Manage.CreateVoucher(&voucher)
 	if err != nil {
 		mh.log.Error("Failed to create", zap.Error(err))
-		helper.ResponseError(c, "FAILED", "Failed to create Voucher", http.StatusInternalServerError)
+		helper.ResponseError(c, "FAILED", "Failed to create Voucher", http.StatusBadRequest)
 		return
 	}
 
