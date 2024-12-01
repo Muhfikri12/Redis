@@ -21,17 +21,17 @@ type ManagementVoucherInterface interface {
 
 type ManagementVoucherRepo struct {
 	DB  *gorm.DB
-	log *zap.Logger
+	Log *zap.Logger
 }
 
 func NewManagementVoucherRepo(db *gorm.DB, log *zap.Logger) ManagementVoucherInterface {
-	return &ManagementVoucherRepo{DB: db, log: log}
+	return &ManagementVoucherRepo{DB: db, Log: log}
 }
 
 func (m *ManagementVoucherRepo) CreateVoucher(voucher *models.Voucher) error {
 	err := m.DB.Create(voucher).Error
 	if err != nil {
-		m.log.Error("Error from repo creating voucher:", zap.Error(err))
+		m.Log.Error("Error from repo creating voucher:", zap.Error(err))
 		return err
 	}
 
@@ -42,7 +42,7 @@ func (m *ManagementVoucherRepo) SoftDeleteVoucher(voucherID int) error {
 
 	err := m.DB.Delete(&models.Voucher{}, voucherID).Error
 	if err != nil {
-		m.log.Error("Error from repo soft deleting voucher:", zap.Error(err))
+		m.Log.Error("Error from repo soft deleting voucher:", zap.Error(err))
 		return err
 	}
 
@@ -148,7 +148,7 @@ func (m *ManagementVoucherRepo) CreateRedeemVoucher(redeem *models.Redeem, point
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
-			m.log.Panic("Transaction rolled back due to panic", zap.Any("reason", r))
+			m.Log.Panic("Transaction rolled back due to panic", zap.Any("reason", r))
 		}
 	}()
 
@@ -176,7 +176,7 @@ func (m *ManagementVoucherRepo) CreateRedeemVoucher(redeem *models.Redeem, point
 		Scan(&voucher).Error
 	if err != nil {
 		tx.Rollback()
-		m.log.Error("Failed to fetch voucher data: ", zap.Error(err))
+		m.Log.Error("Failed to fetch voucher data: ", zap.Error(err))
 		return err
 	}
 	fmt.Println(voucher.PointsRequired)
@@ -204,7 +204,7 @@ func (m *ManagementVoucherRepo) CreateRedeemVoucher(redeem *models.Redeem, point
 	err = tx.Create(redeem).Error
 	if err != nil {
 		tx.Rollback()
-		m.log.Error("Failed to create redeem: ", zap.Error(err))
+		m.Log.Error("Failed to create redeem: ", zap.Error(err))
 		return err
 	}
 
@@ -213,13 +213,13 @@ func (m *ManagementVoucherRepo) CreateRedeemVoucher(redeem *models.Redeem, point
 		UpdateColumn("quota", gorm.Expr("quota - ?", 1)).Error
 	if err != nil {
 		tx.Rollback()
-		m.log.Error("Failed to decrement voucher quota: ", zap.Error(err))
+		m.Log.Error("Failed to decrement voucher quota: ", zap.Error(err))
 		return err
 	}
 
 	err = tx.Commit().Error
 	if err != nil {
-		m.log.Error("Failed to commit transaction: ", zap.Error(err))
+		m.Log.Error("Failed to commit transaction: ", zap.Error(err))
 		return err
 	}
 
