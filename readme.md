@@ -116,13 +116,7 @@ Voucher System API adalah sebuah REST API yang dikembangkan menggunakan Golang d
     App_Debug=true
      `
 
-4. **Jalankan Main App**:
-
-   ```bash
-   go run .
-   ```
-
-5. **Jalankan Server**:
+4. **Jalankan Server**:
 
    ```bash
    go run main.go
