@@ -152,6 +152,15 @@ func (m *ManagementVoucherRepo) CreateRedeemVoucher(redeem *models.Redeem, point
 		}
 	}()
 
+	err := tx.Model(&models.Redeem{}).
+		Where("user_id = ? AND voucher_id = ?", redeem.UserID, redeem.VoucherID).
+		First(&models.Redeem{}).Error
+
+	if err == nil {
+		tx.Rollback()
+		return fmt.Errorf("user_id %d already claimed voucher_id %d", redeem.UserID, redeem.VoucherID)
+	}
+
 	var voucher struct {
 		Quota          int
 		PointsRequired int
@@ -161,7 +170,7 @@ func (m *ManagementVoucherRepo) CreateRedeemVoucher(redeem *models.Redeem, point
 
 	today := time.Now()
 
-	err := tx.Model(&models.Voucher{}).
+	err = tx.Model(&models.Voucher{}).
 		Where("id = ?", redeem.VoucherID).
 		Select("quota, points_required, start_date, end_date").
 		Scan(&voucher).Error

@@ -36,3 +36,12 @@
 {"L":"INFO","T":"2024-12-01T09:36:13.399+0700","M":"Logger initialized successfully"}
 {"L":"ERROR","T":"2024-12-01T09:36:17.472+0700","M":"Error from service create redeem voucher: voucher expired"}
 {"L":"ERROR","T":"2024-12-01T09:36:17.472+0700","M":"Failed to create redeem voucher","error":"voucher expired"}
+{"L":"INFO","T":"2024-12-01T09:47:09.748+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-01T09:48:16.407+0700","M":"Create Redeem Voucher successfully"}
+{"L":"INFO","T":"2024-12-01T09:48:24.200+0700","M":"Create Redeem Voucher successfully"}
+{"L":"INFO","T":"2024-12-01T09:54:29.042+0700","M":"Logger initialized successfully"}
+{"L":"ERROR","T":"2024-12-01T09:54:33.113+0700","M":"Error from service create redeem voucher: user_id 124 already claimed voucher_id 15"}
+{"L":"ERROR","T":"2024-12-01T09:54:33.113+0700","M":"Failed to create redeem voucher","error":"user_id 124 already claimed voucher_id 15"}
+{"L":"INFO","T":"2024-12-01T09:56:03.948+0700","M":"Create Redeem Voucher successfully"}
+{"L":"ERROR","T":"2024-12-01T09:56:11.751+0700","M":"Error from service create redeem voucher: user_id 123 already claimed voucher_id 15"}
+{"L":"ERROR","T":"2024-12-01T09:56:11.751+0700","M":"Failed to create redeem voucher","error":"user_id 123 already claimed voucher_id 15"}
