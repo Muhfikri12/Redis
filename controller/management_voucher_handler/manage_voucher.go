@@ -1,4 +1,4 @@
-package controller
+package managementvoucherhandler
 
 import (
 	"net/http"
