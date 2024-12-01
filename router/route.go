@@ -11,7 +11,7 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 
 	router := r.Group("/vouchers")
 	{
-		router.POST("/", ctx.Ctl.Manage.CreateVoucher)
+		router.POST("/create", ctx.Ctl.Manage.CreateVoucher)
 		router.DELETE("/:id", ctx.Ctl.Manage.SoftDeleteVoucher)
 		router.PUT("/:id", ctx.Ctl.Manage.UpdateVoucher)
 		router.GET("/reedem-points", ctx.Ctl.Manage.ShowRedeemPoints)
