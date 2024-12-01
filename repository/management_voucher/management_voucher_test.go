@@ -290,3 +290,82 @@ func TestShowRedeemPoints(t *testing.T) {
 		assert.EqualError(t, err, "database error")
 	})
 }
+
+func TestGetVouchersByQueryParams(t *testing.T) {
+	db, mock := setupTestDB()
+	defer func() { _ = mock.ExpectationsWereMet() }()
+
+	log := *zap.NewNop()
+	voucherRepo := managementvoucher.NewManagementVoucherRepo(db, &log)
+
+	t.Run("Successfully fetch vouchers with all query parameters", func(t *testing.T) {
+		rawPaymentMethods := `["Credit Card","PayPal"]`
+		rawApplicableAreas := `["US","Canada"]`
+
+		mockRows := sqlmock.NewRows([]string{
+			"id", "voucher_name", "voucher_code", "voucher_type", "points_required",
+			"description", "voucher_category", "discount_value", "minimum_purchase",
+			"payment_methods", "start_date", "end_date", "applicable_areas", "quota",
+			"status", "created_at", "updated_at",
+		}).
+			AddRow(1, "Promo A", "CODE123", "e-commerce", 0, "Description A", "discount", 10.0, 200000,
+				rawPaymentMethods, time.Now(), time.Now().AddDate(0, 0, 1), rawApplicableAreas, 100, true, time.Now(), time.Now()).
+			AddRow(2, "Promo B", "CODE456", "retail", 0, "Description B", "voucher", 15.0, 150000,
+				rawPaymentMethods, time.Now(), time.Now().AddDate(0, 0, 1), rawApplicableAreas, 200, true, time.Now(), time.Now())
+
+		mock.ExpectQuery(`SELECT (.+) FROM "vouchers"`).
+			WillReturnRows(mockRows)
+
+		status := "active"
+		area := "US"
+		voucherType := "e-commerce"
+
+		result, err := voucherRepo.GetVouchersByQueryParams(status, area, voucherType)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, *result, 2)
+
+		// Validate first voucher
+		assert.Equal(t, "Promo A", (*result)[0].VoucherName)
+		assert.Equal(t, "CODE123", (*result)[0].VoucherCode)
+		assert.Equal(t, []string{"Credit Card", "PayPal"}, (*result)[0].PaymentMethods)
+		assert.Equal(t, []string{"US", "Canada"}, (*result)[0].ApplicableAreas)
+
+		// Validate second voucher
+		assert.Equal(t, "Promo B", (*result)[1].VoucherName)
+		assert.Equal(t, "CODE456", (*result)[1].VoucherCode)
+	})
+
+	t.Run("No vouchers match query parameters", func(t *testing.T) {
+		mock.ExpectQuery(`SELECT (.+) FROM "vouchers"`).
+			WillReturnRows(sqlmock.NewRows([]string{
+				"id", "voucher_name", "voucher_code", "voucher_type", "points_required",
+				"description", "voucher_category", "discount_value", "minimum_purchase",
+				"payment_methods", "start_date", "end_date", "applicable_areas", "quota",
+				"status", "created_at", "updated_at",
+			}))
+
+		status := "non-active"
+		area := "Europe"
+		voucherType := "retail"
+
+		result, err := voucherRepo.GetVouchersByQueryParams(status, area, voucherType)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, *result, 0)
+	})
+
+	t.Run("Database error while fetching vouchers", func(t *testing.T) {
+		mock.ExpectQuery(`SELECT (.+) FROM "vouchers"`).
+			WillReturnError(fmt.Errorf("database error"))
+
+		status := "active"
+		area := "Asia"
+		voucherType := "redeem points"
+
+		result, err := voucherRepo.GetVouchersByQueryParams(status, area, voucherType)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+		assert.EqualError(t, err, "database error")
+	})
+}
