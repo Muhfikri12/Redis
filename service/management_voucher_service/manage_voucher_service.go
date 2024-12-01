@@ -1,8 +1,9 @@
-package service
+package managementvoucherservice
 
 import (
 	"voucher_system/models"
 	"voucher_system/repository"
+	managementvoucher "voucher_system/repository/management_voucher"
 
 	"go.uber.org/zap"
 )
@@ -11,7 +12,7 @@ type ManageVoucherService interface {
 	CreateVoucher(voucher *models.Voucher) error
 	SoftDeleteVoucher(voucherID int) error
 	UpdateVoucher(voucher *models.Voucher, voucherID int) error
-	ShowRedeemPoints() (*[]repository.RedeemPoint, error)
+	ShowRedeemPoints() (*[]managementvoucher.RedeemPoint, error)
 	GetVouchersByQueryParams(status, area, voucher_type string) (*[]models.Voucher, error)
 	CreateRedeemVoucher(redeem *models.Redeem, points int) error
 }
@@ -54,7 +55,7 @@ func (ms *ManagementVoucherservice) UpdateVoucher(voucher *models.Voucher, vouch
 	return nil
 }
 
-func (ms *ManagementVoucherservice) ShowRedeemPoints() (*[]repository.RedeemPoint, error) {
+func (ms *ManagementVoucherservice) ShowRedeemPoints() (*[]managementvoucher.RedeemPoint, error) {
 
 	vouchers, err := ms.repo.Manage.ShowRedeemPoints()
 	if err != nil {

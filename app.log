@@ -23,3 +23,26 @@
 {"L":"INFO","T":"2024-11-30T20:41:58.263+0700","M":"Logger initialized successfully"}
 {"L":"INFO","T":"2024-11-30T20:42:49.000+0700","M":"Logger initialized successfully"}
 {"L":"INFO","T":"2024-11-30T20:44:37.502+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-01T07:32:22.729+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-01T07:33:41.863+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-01T07:34:47.089+0700","M":"Create Voucher successfully"}
+{"L":"INFO","T":"2024-12-01T08:48:12.945+0700","M":"Redeem points retrieved successfully"}
+{"L":"INFO","T":"2024-12-01T08:51:07.890+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-01T08:51:12.546+0700","M":"Redeem points retrieved successfully"}
+{"L":"INFO","T":"2024-12-01T08:52:41.757+0700","M":"Redeem points retrieved successfully"}
+{"L":"INFO","T":"2024-12-01T09:34:47.106+0700","M":"Logger initialized successfully"}
+{"L":"ERROR","T":"2024-12-01T09:35:25.685+0700","M":"Error from service create redeem voucher: voucher cannot be used after its end date: 2024-11-30"}
+{"L":"ERROR","T":"2024-12-01T09:35:25.685+0700","M":"Failed to create redeem voucher","error":"voucher cannot be used after its end date: 2024-11-30"}
+{"L":"INFO","T":"2024-12-01T09:36:13.399+0700","M":"Logger initialized successfully"}
+{"L":"ERROR","T":"2024-12-01T09:36:17.472+0700","M":"Error from service create redeem voucher: voucher expired"}
+{"L":"ERROR","T":"2024-12-01T09:36:17.472+0700","M":"Failed to create redeem voucher","error":"voucher expired"}
+{"L":"INFO","T":"2024-12-01T09:47:09.748+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-01T09:48:16.407+0700","M":"Create Redeem Voucher successfully"}
+{"L":"INFO","T":"2024-12-01T09:48:24.200+0700","M":"Create Redeem Voucher successfully"}
+{"L":"INFO","T":"2024-12-01T09:54:29.042+0700","M":"Logger initialized successfully"}
+{"L":"ERROR","T":"2024-12-01T09:54:33.113+0700","M":"Error from service create redeem voucher: user_id 124 already claimed voucher_id 15"}
+{"L":"ERROR","T":"2024-12-01T09:54:33.113+0700","M":"Failed to create redeem voucher","error":"user_id 124 already claimed voucher_id 15"}
+{"L":"INFO","T":"2024-12-01T09:56:03.948+0700","M":"Create Redeem Voucher successfully"}
+{"L":"ERROR","T":"2024-12-01T09:56:11.751+0700","M":"Error from service create redeem voucher: user_id 123 already claimed voucher_id 15"}
+{"L":"ERROR","T":"2024-12-01T09:56:11.751+0700","M":"Failed to create redeem voucher","error":"user_id 123 already claimed voucher_id 15"}
+{"L":"INFO","T":"2024-12-01T10:00:01.682+0700","M":"Voucher retrieved successfully"}
