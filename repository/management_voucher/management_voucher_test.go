@@ -1,6 +1,7 @@
 package managementvoucher_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 	"voucher_system/models"
@@ -53,25 +54,25 @@ func TestCreateVoucher(t *testing.T) {
 		}
 
 		mock.ExpectBegin()
-		mock.ExpectQuery(`(?i)INSERT INTO "vouchers"`).
+		mock.ExpectQuery(`INSERT INTO "vouchers"`).
 			WithArgs(
-				voucher.VoucherName,     // Argumen 1
-				voucher.VoucherCode,     // Argumen 2
-				voucher.VoucherType,     // Argumen 3
-				voucher.PointsRequired,  // Argumen 4
-				voucher.Description,     // Argumen 5
-				voucher.VoucherCategory, // Argumen 6
-				voucher.DiscountValue,   // Argumen 7
-				voucher.MinimumPurchase, // Argumen 8
-				sqlmock.AnyArg(),        // Argumen 9: PaymentMethods (JSON serialized)
-				sqlmock.AnyArg(),        // Argumen 10: StartDate (time.Time formatted)
-				sqlmock.AnyArg(),        // Argumen 11: EndDate (time.Time formatted)
-				sqlmock.AnyArg(),        // Argumen 12: ApplicableAreas (JSON serialized)
-				voucher.Quota,           // Argumen 13
-				voucher.Status,          // Argumen 14
-				sqlmock.AnyArg(),        // Argumen 15: CreatedAt (time.Time formatted)
-				sqlmock.AnyArg(),        // Argumen 16: UpdatedAt (time.Time formatted)
-				sqlmock.AnyArg(),        // Argumen 17: DeletedAt (NULL)
+				voucher.VoucherName,
+				voucher.VoucherCode,
+				voucher.VoucherType,
+				voucher.PointsRequired,
+				voucher.Description,
+				voucher.VoucherCategory,
+				voucher.DiscountValue,
+				voucher.MinimumPurchase,
+				sqlmock.AnyArg(),
+				sqlmock.AnyArg(),
+				sqlmock.AnyArg(),
+				sqlmock.AnyArg(),
+				voucher.Quota,
+				voucher.Status,
+				sqlmock.AnyArg(),
+				sqlmock.AnyArg(),
+				sqlmock.AnyArg(),
 			).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
@@ -80,6 +81,55 @@ func TestCreateVoucher(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, 1, voucher.ID)
 		assert.NotEmpty(t, voucher.VoucherName)
+	})
+
+	t.Run("Failed to create a voucher", func(t *testing.T) {
+		voucher := &models.Voucher{
+			VoucherName:     "Promo December",
+			VoucherCode:     "DESC2024",
+			VoucherType:     "e-commerce",
+			PointsRequired:  0,
+			Description:     "Get more discount on december",
+			VoucherCategory: "discount",
+			DiscountValue:   10,
+			MinimumPurchase: 200000,
+			PaymentMethods:  []string{"Credit Card", "PayPal"},
+			StartDate:       time.Now().AddDate(0, 0, -5),
+			EndDate:         time.Now().AddDate(0, 0, -1),
+			ApplicableAreas: []string{"US", "Canada"},
+			Quota:           100,
+			Status:          false,
+			CreatedAt:       time.Now().AddDate(0, 0, 1),
+			UpdatedAt:       time.Now().AddDate(0, 0, -1),
+		}
+
+		mock.ExpectBegin()
+		mock.ExpectQuery(`INSERT INTO "vouchers"`).
+			WithArgs(
+				voucher.VoucherName,
+				voucher.VoucherCode,
+				voucher.VoucherType,
+				voucher.PointsRequired,
+				voucher.Description,
+				voucher.VoucherCategory,
+				voucher.DiscountValue,
+				voucher.MinimumPurchase,
+				sqlmock.AnyArg(),
+				sqlmock.AnyArg(),
+				sqlmock.AnyArg(),
+				sqlmock.AnyArg(),
+				voucher.Quota,
+				voucher.Status,
+				sqlmock.AnyArg(),
+				sqlmock.AnyArg(),
+				sqlmock.AnyArg(),
+			).
+			WillReturnError(fmt.Errorf("database error"))
+
+		mock.ExpectRollback()
+		err := customerRepo.CreateVoucher(voucher)
+		assert.Error(t, err)
+		assert.EqualError(t, err, "database error")
 	})
 
 }
