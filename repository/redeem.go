@@ -14,7 +14,7 @@ type RedeemRepository interface {
 }
 
 type redeemRepository struct {
-	DB *gorm.DB
+	DB  *gorm.DB
 	log *zap.Logger
 }
 
@@ -22,14 +22,11 @@ func NewRedeemRepository(db *gorm.DB, log *zap.Logger) RedeemRepository {
 	return &redeemRepository{DB: db, log: log}
 }
 
-
 func (r *redeemRepository) FindUsersByVoucherCode(voucherCode string) ([]models.Redeem, error) {
 	var redeems []models.Redeem
 
-	// Debug log untuk memastikan input
 	r.log.Info("Fetching users by voucher code", zap.String("voucher_code", voucherCode))
 
-	// Query dengan preloading untuk memastikan hubungan table
 	err := r.DB.Table("redeems").
 		Select("redeems.*").
 		Joins("JOIN vouchers ON vouchers.id = redeems.voucher_id").
@@ -41,9 +38,9 @@ func (r *redeemRepository) FindUsersByVoucherCode(voucherCode string) ([]models.
 	}
 
 	if len(redeems) == 0 {
-        return nil, errors.New("no users found for the given voucher code")
-    }
-	// Info log untuk hasil query
+		return nil, errors.New("no users found for the given voucher code")
+	}
+
 	r.log.Info("Query result", zap.Any("redeems", redeems))
 
 	return redeems, err
@@ -57,7 +54,7 @@ func (r *redeemRepository) FindRedeemHistoryByUser(userID int) ([]models.Redeem,
 	}
 
 	if len(redeems) == 0 {
-        return nil, errors.New("no voucher exchange history found")
-    }
+		return nil, errors.New("no voucher exchange history found")
+	}
 	return redeems, err
 }

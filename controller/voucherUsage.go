@@ -54,7 +54,6 @@ func (c *VoucherController) ValidateVoucher(ctx *gin.Context) {
 		return
 	}
 
-	// Validasi input
 	var request struct {
 		VoucherCode       string  `json:"voucher_code" binding:"required"`
 		TransactionAmount float64 `json:"transaction_amount" binding:"required"`
@@ -76,7 +75,6 @@ func (c *VoucherController) ValidateVoucher(ctx *gin.Context) {
 		return
 	}
 
-	// Call service to validate voucher
 	voucher, benefitValue, err := c.service.Voucher.ValidateVoucher(userID, request.VoucherCode, request.TransactionAmount, request.ShippingAmount, request.Area, request.PaymentMethod, transactionDate)
 	if err != nil {
 		c.log.Error("Error fetching voucher", zap.Error(err))
@@ -92,14 +90,12 @@ func (c *VoucherController) ValidateVoucher(ctx *gin.Context) {
 		msg = "invalid"
 	}
 
-	// Response result of validation
 	response := gin.H{
 		"benefit_value": benefitValue,
 		"status":        msg,
 	}
 	helper.ResponseOK(ctx, response, "Voucher is valid")
 }
-
 
 func (c *VoucherController) UseVoucher(ctx *gin.Context) {
 	var request struct {
@@ -125,5 +121,5 @@ func (c *VoucherController) UseVoucher(ctx *gin.Context) {
 		return
 	}
 	helper.ResponseOK(ctx, nil, "voucher used successfully")
-	
+
 }
