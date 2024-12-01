@@ -369,3 +369,139 @@ func TestGetVouchersByQueryParams(t *testing.T) {
 		assert.EqualError(t, err, "database error")
 	})
 }
+
+func TestCreateRedeemVoucher(t *testing.T) {
+	db, mock := setupTestDB()
+	defer func() { _ = mock.ExpectationsWereMet() }()
+
+	log := *zap.NewNop()
+	voucherRepo := managementvoucher.NewManagementVoucherRepo(db, &log)
+
+	today := time.Now()
+
+	t.Run("Successfully create redeem voucher", func(t *testing.T) {
+		redeem := &models.Redeem{
+			UserID:    1,
+			VoucherID: 100,
+		}
+		points := 50
+
+		mock.ExpectBegin()
+		mock.ExpectQuery(`SELECT \* FROM "redeems" WHERE user_id = \$1 AND voucher_id = \$2 ORDER BY "redeems"."id" LIMIT \$3`).
+			WithArgs(redeem.UserID, redeem.VoucherID, 1).
+			WillReturnRows(sqlmock.NewRows(nil)) // Tidak ada baris ditemukan
+
+		// Mock fetch voucher data
+		mock.ExpectQuery(`SELECT quota, points_required, start_date, end_date FROM "vouchers" WHERE id = \$1`).
+			WithArgs(redeem.VoucherID).
+			WillReturnRows(sqlmock.NewRows([]string{"quota", "points_required", "start_date", "end_date"}).
+				AddRow(10, 50, today.AddDate(0, 0, -5), today.AddDate(0, 0, 5)))
+
+		// Mock create redeem
+		mock.ExpectQuery(`INSERT INTO "redeems"`).
+			WithArgs(
+				redeem.UserID,
+				redeem.VoucherID,
+			).
+			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+			// WillReturnResult(sqlmock.NewResult(1, 1))
+
+		// Mock decrement quota
+		mock.ExpectExec(`UPDATE "vouchers" SET "quota"=quota - \$1 WHERE id = \$2 AND "vouchers"."deleted_at" IS NULL`).
+			WithArgs(1, redeem.VoucherID).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+
+		mock.ExpectCommit()
+
+		err := voucherRepo.CreateRedeemVoucher(redeem, points)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Redeem already exists", func(t *testing.T) {
+		redeem := &models.Redeem{
+			UserID:    2,
+			VoucherID: 101,
+		}
+
+		mock.ExpectBegin()
+		mock.ExpectQuery(`SELECT \* FROM "redeems" WHERE user_id = \$1 AND voucher_id = \$2 ORDER BY "redeems"."id" LIMIT \$3`).
+			WithArgs(redeem.UserID, redeem.VoucherID, 1).
+			WillReturnRows(sqlmock.NewRows([]string{"user_id", "voucher_id"}).
+				AddRow(redeem.UserID, redeem.VoucherID))
+
+		mock.ExpectRollback()
+
+		err := voucherRepo.CreateRedeemVoucher(redeem, 50)
+		assert.Error(t, err)
+		assert.EqualError(t, err, fmt.Sprintf("user_id %d already claimed voucher_id %d", redeem.UserID, redeem.VoucherID))
+	})
+
+	t.Run("Insufficient quota", func(t *testing.T) {
+		redeem := &models.Redeem{
+			UserID:    3,
+			VoucherID: 102,
+		}
+
+		mock.ExpectBegin()
+		mock.ExpectQuery(`SELECT \* FROM "redeems" WHERE user_id = \$1 AND voucher_id = \$2 ORDER BY "redeems"."id" LIMIT \$3`).
+			WithArgs(redeem.UserID, redeem.VoucherID, 1).
+			WillReturnError(gorm.ErrRecordNotFound)
+
+		mock.ExpectQuery(`SELECT quota, points_required, start_date, end_date FROM "vouchers"`).
+			WithArgs(redeem.VoucherID).
+			WillReturnRows(sqlmock.NewRows([]string{"quota", "points_required", "start_date", "end_date"}).
+				AddRow(0, 50, today.AddDate(0, 0, -5), today.AddDate(0, 0, 5)))
+
+		mock.ExpectRollback()
+
+		err := voucherRepo.CreateRedeemVoucher(redeem, 50)
+		assert.Error(t, err)
+		assert.EqualError(t, err, fmt.Sprintf("quota for voucher ID %d is not sufficient", redeem.VoucherID))
+	})
+
+	t.Run("Points mismatch", func(t *testing.T) {
+		redeem := &models.Redeem{
+			UserID:    4,
+			VoucherID: 103,
+		}
+
+		mock.ExpectBegin()
+		mock.ExpectQuery(`SELECT \* FROM "redeems" WHERE user_id = \$1 AND voucher_id = \$2 ORDER BY "redeems"."id" LIMIT \$3`).
+			WithArgs(redeem.UserID, redeem.VoucherID, 1).
+			WillReturnError(gorm.ErrRecordNotFound)
+
+		mock.ExpectQuery(`SELECT quota, points_required, start_date, end_date FROM "vouchers"`).
+			WithArgs(redeem.VoucherID).
+			WillReturnRows(sqlmock.NewRows([]string{"quota", "points_required", "start_date", "end_date"}).
+				AddRow(10, 100, today.AddDate(0, 0, -5), today.AddDate(0, 0, 5)))
+
+		mock.ExpectRollback()
+
+		err := voucherRepo.CreateRedeemVoucher(redeem, 50)
+		assert.Error(t, err)
+		assert.EqualError(t, err, "required points (100) do not match provided points (50)")
+	})
+
+	t.Run("Voucher expired", func(t *testing.T) {
+		redeem := &models.Redeem{
+			UserID:    5,
+			VoucherID: 104,
+		}
+
+		mock.ExpectBegin()
+		mock.ExpectQuery(`SELECT \* FROM "redeems" WHERE user_id = \$1 AND voucher_id = \$2 ORDER BY "redeems"."id" LIMIT \$3`).
+			WithArgs(redeem.UserID, redeem.VoucherID, 1).
+			WillReturnError(gorm.ErrRecordNotFound)
+
+		mock.ExpectQuery(`SELECT quota, points_required, start_date, end_date FROM "vouchers"`).
+			WithArgs(redeem.VoucherID).
+			WillReturnRows(sqlmock.NewRows([]string{"quota", "points_required", "start_date", "end_date"}).
+				AddRow(10, 50, today.AddDate(0, 0, -10), today.AddDate(0, 0, -1)))
+
+		mock.ExpectRollback()
+
+		err := voucherRepo.CreateRedeemVoucher(redeem, 50)
+		assert.Error(t, err)
+		assert.EqualError(t, err, "voucher expired")
+	})
+}
