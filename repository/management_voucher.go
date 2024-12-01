@@ -3,6 +3,7 @@ package repository
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 	"voucher_system/models"
 
 	"go.uber.org/zap"
@@ -78,7 +79,7 @@ func (m *ManagementVoucherRepo) ShowRedeemPoints() (*[]RedeemPoint, error) {
 	query := m.DB.
 		Table("vouchers as v").
 		Select(`v.voucher_name, v.discount_value, v.points_required`).
-		Where("voucher_type = ?", "redeem points")
+		Where("voucher_type = ? AND start_date <= NOW() AND end_date >= NOW()", "redeem points")
 
 	err := query.Find(&voucher).Error
 	if err != nil {
@@ -154,11 +155,15 @@ func (m *ManagementVoucherRepo) CreateRedeemVoucher(redeem *models.Redeem, point
 	var voucher struct {
 		Quota          int
 		PointsRequired int
+		StartDate      time.Time
+		EndDate        time.Time
 	}
+
+	today := time.Now()
 
 	err := tx.Model(&models.Voucher{}).
 		Where("id = ?", redeem.VoucherID).
-		Select("quota, points_required").
+		Select("quota, points_required, start_date, end_date").
 		Scan(&voucher).Error
 	if err != nil {
 		tx.Rollback()
@@ -175,6 +180,16 @@ func (m *ManagementVoucherRepo) CreateRedeemVoucher(redeem *models.Redeem, point
 	if points != voucher.PointsRequired {
 		tx.Rollback()
 		return fmt.Errorf("required points (%d) do not match provided points (%d)", voucher.PointsRequired, points)
+	}
+
+	if voucher.StartDate.After(today) {
+		tx.Rollback()
+		return fmt.Errorf("voucher cannot be used before its start date: %s", voucher.StartDate.Format("2006-01-02"))
+	}
+
+	if voucher.EndDate.Before(today) {
+		tx.Rollback()
+		return fmt.Errorf("voucher expired")
 	}
 
 	err = tx.Create(redeem).Error

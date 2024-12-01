@@ -26,3 +26,13 @@
 {"L":"INFO","T":"2024-12-01T07:32:22.729+0700","M":"Logger initialized successfully"}
 {"L":"INFO","T":"2024-12-01T07:33:41.863+0700","M":"Logger initialized successfully"}
 {"L":"INFO","T":"2024-12-01T07:34:47.089+0700","M":"Create Voucher successfully"}
+{"L":"INFO","T":"2024-12-01T08:48:12.945+0700","M":"Redeem points retrieved successfully"}
+{"L":"INFO","T":"2024-12-01T08:51:07.890+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-01T08:51:12.546+0700","M":"Redeem points retrieved successfully"}
+{"L":"INFO","T":"2024-12-01T08:52:41.757+0700","M":"Redeem points retrieved successfully"}
+{"L":"INFO","T":"2024-12-01T09:34:47.106+0700","M":"Logger initialized successfully"}
+{"L":"ERROR","T":"2024-12-01T09:35:25.685+0700","M":"Error from service create redeem voucher: voucher cannot be used after its end date: 2024-11-30"}
+{"L":"ERROR","T":"2024-12-01T09:35:25.685+0700","M":"Failed to create redeem voucher","error":"voucher cannot be used after its end date: 2024-11-30"}
+{"L":"INFO","T":"2024-12-01T09:36:13.399+0700","M":"Logger initialized successfully"}
+{"L":"ERROR","T":"2024-12-01T09:36:17.472+0700","M":"Error from service create redeem voucher: voucher expired"}
+{"L":"ERROR","T":"2024-12-01T09:36:17.472+0700","M":"Failed to create redeem voucher","error":"voucher expired"}
