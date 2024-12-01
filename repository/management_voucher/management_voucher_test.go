@@ -44,8 +44,8 @@ func TestCreateVoucher(t *testing.T) {
 			DiscountValue:   10,
 			MinimumPurchase: 200000,
 			PaymentMethods:  []string{"Credit Card", "PayPal"},
-			StartDate:       time.Now().AddDate(0, 0, -5), // StartDate 5 days ago
-			EndDate:         time.Now().AddDate(0, 0, -1), // EndDate 1 day ago
+			StartDate:       time.Now().AddDate(0, 0, -5),
+			EndDate:         time.Now().AddDate(0, 0, -1),
 			ApplicableAreas: []string{"US", "Canada"},
 			Quota:           100,
 			Status:          false,
@@ -131,5 +131,40 @@ func TestCreateVoucher(t *testing.T) {
 		assert.Error(t, err)
 		assert.EqualError(t, err, "database error")
 	})
+}
 
+func TestSoftDeleteVoucher(t *testing.T) {
+	db, mock := setupTestDB()
+	defer func() { _ = mock.ExpectationsWereMet() }()
+
+	log := *zap.NewNop()
+
+	voucherRepo := managementvoucher.NewManagementVoucherRepo(db, &log)
+
+	t.Run("Successfully soft delete a voucher", func(t *testing.T) {
+		voucherID := 1
+
+		mock.ExpectBegin()
+		mock.ExpectExec(`UPDATE "vouchers" SET "deleted_at"=`).
+			WithArgs(sqlmock.AnyArg(), voucherID).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+		mock.ExpectCommit()
+
+		err := voucherRepo.SoftDeleteVoucher(voucherID)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Failed to soft delete a voucher", func(t *testing.T) {
+		voucherID := 2
+
+		mock.ExpectBegin()
+		mock.ExpectExec(`UPDATE "vouchers" SET "deleted_at"=`).
+			WithArgs(sqlmock.AnyArg(), voucherID).
+			WillReturnError(fmt.Errorf("database error"))
+		mock.ExpectRollback()
+
+		err := voucherRepo.SoftDeleteVoucher(voucherID)
+		assert.Error(t, err)
+		assert.EqualError(t, err, "database error")
+	})
 }
