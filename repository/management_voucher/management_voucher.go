@@ -1,4 +1,4 @@
-package repository
+package managementvoucher
 
 import (
 	"encoding/json"

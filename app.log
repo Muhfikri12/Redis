@@ -45,3 +45,4 @@
 {"L":"INFO","T":"2024-12-01T09:56:03.948+0700","M":"Create Redeem Voucher successfully"}
 {"L":"ERROR","T":"2024-12-01T09:56:11.751+0700","M":"Error from service create redeem voucher: user_id 123 already claimed voucher_id 15"}
 {"L":"ERROR","T":"2024-12-01T09:56:11.751+0700","M":"Failed to create redeem voucher","error":"user_id 123 already claimed voucher_id 15"}
+{"L":"INFO","T":"2024-12-01T10:00:01.682+0700","M":"Voucher retrieved successfully"}

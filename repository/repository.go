@@ -1,12 +1,14 @@
 package repository
 
 import (
+	managementvoucher "voucher_system/repository/management_voucher"
+
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 type Repository struct {
-	Manage  ManagementVoucherInterface
+	Manage  managementvoucher.ManagementVoucherInterface
 	Voucher VoucherRepository
 	Redeem  RedeemRepository
 	History HistoryRepository
@@ -14,7 +16,7 @@ type Repository struct {
 
 func NewRepository(db *gorm.DB, log *zap.Logger) Repository {
 	return Repository{
-		Manage:  NewManagementVoucherRepo(db, log),
+		Manage:  managementvoucher.NewManagementVoucherRepo(db, log),
 		Voucher: NewVoucherRepository(db, log),
 		Redeem:  NewRedeemRepository(db, log),
 		History: NewHistoryRepository(db, log),
