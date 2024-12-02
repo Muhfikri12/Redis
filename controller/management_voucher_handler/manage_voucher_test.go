@@ -215,3 +215,116 @@ func TestCreateVoucher(t *testing.T) {
 		assert.JSONEq(t, expectedResponse, w.Body.String())
 	})
 }
+
+func TestUpdateVoucher(t *testing.T) {
+	// Setup logger
+	log := *zap.NewNop()
+
+	t.Run("Successfully update voucher", func(t *testing.T) {
+		// Mock Service
+		mockService := &managementvoucherservice.ManagementVoucherServiceMock{}
+		service := service.Service{
+			Manage: mockService,
+		}
+		handler := managementvoucherhandler.NewManagementVoucherHanlder(service, &log)
+
+		// Router and Endpoint
+		r := gin.Default()
+		r.PUT("/vouchers/:id", handler.UpdateVoucher)
+
+		// Mock Data
+		mockVoucher := models.Voucher{
+			VoucherName:     "Updated Voucher",
+			VoucherCode:     "TEST123",
+			VoucherType:     "e-commerce",
+			VoucherCategory: "Discount",
+			DiscountValue:   15.0,
+			MinimumPurchase: 150.0,
+			PaymentMethods:  []string{"Credit Card", "PayPal"},
+			StartDate:       time.Now().Round(0),
+			EndDate:         time.Now().AddDate(0, 1, 0).Round(0),
+			ApplicableAreas: []string{"Bali"},
+			Quota:           75,
+		}
+
+		// Mock Response
+		mockService.On("UpdateVoucher", &mockVoucher, 1).Return(nil)
+
+		// Create Request Body
+		body, _ := json.Marshal(mockVoucher)
+
+		// Perform Request
+		req := httptest.NewRequest(http.MethodPut, "/vouchers/1", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		// Call the Handler
+		r.ServeHTTP(w, req)
+
+		// Assert the Response
+		assert.Equal(t, http.StatusOK, w.Code)
+		mockService.AssertCalled(t, "UpdateVoucher", &mockVoucher, 1)
+
+		// Assert the JSON Response Body
+		expectedResponse := map[string]interface{}{
+			"status":  true,
+			"message": "updated succesfully",
+			"data":    float64(1), // ID of the updated voucher
+		}
+
+		var actualResponse map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &actualResponse)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedResponse, actualResponse)
+	})
+
+	t.Run("Fail to update voucher due to service error", func(t *testing.T) {
+		// Mock Service
+		mockService := &managementvoucherservice.ManagementVoucherServiceMock{}
+		service := service.Service{
+			Manage: mockService,
+		}
+		handler := managementvoucherhandler.NewManagementVoucherHanlder(service, &log)
+
+		// Router and Endpoint
+		r := gin.Default()
+		r.PUT("/vouchers/:id", handler.UpdateVoucher)
+
+		// Mock Data
+		mockVoucher := models.Voucher{
+			VoucherName:     "Updated Voucher",
+			VoucherCode:     "TEST123",
+			VoucherType:     "e-commerce",
+			VoucherCategory: "Discount",
+			DiscountValue:   15.0,
+			MinimumPurchase: 150.0,
+			PaymentMethods:  []string{"Credit Card", "PayPal"},
+			StartDate:       time.Now().Round(0),
+			EndDate:         time.Now().AddDate(0, 1, 0).Round(0),
+			ApplicableAreas: []string{"Bali"},
+			Quota:           75,
+		}
+
+		// Mock Response
+		mockService.On("UpdateVoucher", &mockVoucher, 1).Return(fmt.Errorf("failed to update voucher"))
+
+		// Create Request Body
+		body, _ := json.Marshal(mockVoucher)
+
+		// Perform Request
+		req := httptest.NewRequest(http.MethodPut, "/vouchers/1", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		// Call the Handler
+		r.ServeHTTP(w, req)
+
+		// Assert the Response
+		assert.Equal(t, http.StatusInternalServerError, w.Code)
+		mockService.AssertCalled(t, "UpdateVoucher", &mockVoucher, 1)
+
+		// Assert the JSON Response Body
+		expectedResponse := `{"error_msg":"FAILED", "message":"Failed to Updated Voucher", "status":false}`
+		assert.JSONEq(t, expectedResponse, w.Body.String())
+	})
+}
