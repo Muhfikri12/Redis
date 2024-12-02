@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 	managementvoucherhandler "voucher_system/controller/management_voucher_handler"
@@ -493,5 +494,128 @@ func TestGetVouchersByQueryParams(t *testing.T) {
 		// Assert the JSON Response Body
 		expectedResponse := `{"error_msg":"NOT FOUND", "message":"Voucher Not Found", "status":false}`
 		assert.JSONEq(t, expectedResponse, w.Body.String())
+	})
+}
+
+func TestCreateRedeemVoucher(t *testing.T) {
+	log := *zap.NewNop() // Setup logger
+
+	t.Run("Successfully create redeem voucher", func(t *testing.T) {
+		// Mock Service
+		mockService := &managementvoucherservice.ManagementVoucherServiceMock{}
+		service := service.Service{
+			Manage: mockService,
+		}
+		handler := managementvoucherhandler.NewManagementVoucherHanlder(service, &log)
+
+		// Router and Endpoint
+		r := gin.Default()
+		r.POST("/redeem", handler.CreateRedeemVoucher)
+
+		// Input Payload
+		payload := `{"voucher_id": 1, "user_id": 2, "points": 100}`
+
+		// Mock Response
+		mockRedeem := models.Redeem{
+			VoucherID: 1,
+			UserID:    2,
+		}
+		mockService.On("CreateRedeemVoucher", &mockRedeem, 100).Return(nil)
+
+		// Perform Request
+		req := httptest.NewRequest(http.MethodPost, "/redeem", strings.NewReader(payload))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		// Call the Handler
+		r.ServeHTTP(w, req)
+
+		// Assert the Response
+		assert.Equal(t, http.StatusOK, w.Code)
+		mockService.AssertCalled(t, "CreateRedeemVoucher", &mockRedeem, 100)
+
+		// Assert the JSON Response Body
+		var actualResponse map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &actualResponse)
+		assert.NoError(t, err)
+		assert.Equal(t, "Created successfully", actualResponse["message"])
+		assert.True(t, actualResponse["status"].(bool))
+	})
+
+	t.Run("Fail to create redeem voucher due to invalid payload", func(t *testing.T) {
+		// Mock Service
+		mockService := &managementvoucherservice.ManagementVoucherServiceMock{}
+		service := service.Service{
+			Manage: mockService,
+		}
+		handler := managementvoucherhandler.NewManagementVoucherHanlder(service, &log)
+
+		// Router and Endpoint
+		r := gin.Default()
+		r.POST("/redeem", handler.CreateRedeemVoucher)
+
+		// Invalid Payload
+		payload := `{"voucher_id": 1, "user_id": "invalid", "points": 100}`
+
+		// Perform Request
+		req := httptest.NewRequest(http.MethodPost, "/redeem", strings.NewReader(payload))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		// Call the Handler
+		r.ServeHTTP(w, req)
+
+		// Assert the Response
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		mockService.AssertNotCalled(t, "CreateRedeemVoucher")
+
+		// Assert the JSON Response Body
+		var actualResponse map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &actualResponse)
+		assert.NoError(t, err)
+		assert.Equal(t, "Invalid Payload: json: cannot unmarshal string into Go struct field .user_id of type int", actualResponse["message"])
+		assert.False(t, actualResponse["status"].(bool))
+	})
+
+	t.Run("Fail to create redeem voucher due to service error", func(t *testing.T) {
+		// Mock Service
+		mockService := &managementvoucherservice.ManagementVoucherServiceMock{}
+		service := service.Service{
+			Manage: mockService,
+		}
+		handler := managementvoucherhandler.NewManagementVoucherHanlder(service, &log)
+
+		// Router and Endpoint
+		r := gin.Default()
+		r.POST("/redeem", handler.CreateRedeemVoucher)
+
+		// Input Payload
+		payload := `{"voucher_id": 1, "user_id": 2, "points": 100}`
+
+		// Mock Response
+		mockRedeem := models.Redeem{
+			VoucherID: 1,
+			UserID:    2,
+		}
+		mockService.On("CreateRedeemVoucher", &mockRedeem, 100).Return(fmt.Errorf("service error"))
+
+		// Perform Request
+		req := httptest.NewRequest(http.MethodPost, "/redeem", strings.NewReader(payload))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		// Call the Handler
+		r.ServeHTTP(w, req)
+
+		// Assert the Response
+		assert.Equal(t, http.StatusInternalServerError, w.Code)
+		mockService.AssertCalled(t, "CreateRedeemVoucher", &mockRedeem, 100)
+
+		// Assert the JSON Response Body
+		var actualResponse map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &actualResponse)
+		assert.NoError(t, err)
+		assert.Equal(t, "Failed to create redeem voucher: service error", actualResponse["message"])
+		assert.False(t, actualResponse["status"].(bool))
 	})
 }
