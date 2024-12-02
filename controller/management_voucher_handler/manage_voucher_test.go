@@ -413,3 +413,85 @@ func TestShowRedeemPoints(t *testing.T) {
 		assert.JSONEq(t, expectedResponse, w.Body.String())
 	})
 }
+
+func TestGetVouchersByQueryParams(t *testing.T) {
+	// Setup logger
+	log := *zap.NewNop()
+
+	t.Run("Successfully retrieve vouchers with query params", func(t *testing.T) {
+		// Mock Service
+		mockService := &managementvoucherservice.ManagementVoucherServiceMock{}
+		service := service.Service{
+			Manage: mockService,
+		}
+		handler := managementvoucherhandler.NewManagementVoucherHanlder(service, &log)
+
+		// Router and Endpoint
+		r := gin.Default()
+		r.GET("/vouchers", handler.GetVouchersByQueryParams)
+
+		// Mock Data
+		mockVouchers := []models.Voucher{
+			{
+				VoucherName: "Active Voucher 1",
+				VoucherType: "e-commerce",
+			},
+			{
+				VoucherName: "Active Voucher 2",
+				VoucherType: "e-commerce",
+			},
+		}
+
+		// Mock Response
+		mockService.On("GetVouchersByQueryParams", "active", "Jawa", "e-commerce").Return(&mockVouchers, nil)
+
+		// Perform Request
+		req := httptest.NewRequest(http.MethodGet, "/vouchers?status=active&area=Jawa&voucher_type=e-commerce", nil)
+		w := httptest.NewRecorder()
+
+		// Call the Handler
+		r.ServeHTTP(w, req)
+
+		// Assert the Response
+		assert.Equal(t, http.StatusOK, w.Code)
+		mockService.AssertCalled(t, "GetVouchersByQueryParams", "active", "Jawa", "e-commerce")
+
+		// Assert the JSON Response Body
+		var actualResponse map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &actualResponse)
+		assert.NoError(t, err)
+		assert.Equal(t, "Voucher retrieved successfully", actualResponse["message"])
+		assert.True(t, actualResponse["status"].(bool))
+	})
+
+	t.Run("Fail to retrieve vouchers due to service error", func(t *testing.T) {
+		// Mock Service
+		mockService := &managementvoucherservice.ManagementVoucherServiceMock{}
+		service := service.Service{
+			Manage: mockService,
+		}
+		handler := managementvoucherhandler.NewManagementVoucherHanlder(service, &log)
+
+		// Router and Endpoint
+		r := gin.Default()
+		r.GET("/vouchers", handler.GetVouchersByQueryParams)
+
+		// Mock Response
+		mockService.On("GetVouchersByQueryParams", "expired", "", "").Return(nil, fmt.Errorf("failed to retrieve vouchers"))
+
+		// Perform Request
+		req := httptest.NewRequest(http.MethodGet, "/vouchers?status=expired", nil)
+		w := httptest.NewRecorder()
+
+		// Call the Handler
+		r.ServeHTTP(w, req)
+
+		// Assert the Response
+		assert.Equal(t, http.StatusNotFound, w.Code)
+		mockService.AssertCalled(t, "GetVouchersByQueryParams", "expired", "", "")
+
+		// Assert the JSON Response Body
+		expectedResponse := `{"error_msg":"NOT FOUND", "message":"Voucher Not Found", "status":false}`
+		assert.JSONEq(t, expectedResponse, w.Body.String())
+	})
+}
