@@ -1,0 +1,277 @@
+{
+	"info": {
+		"_postman_id": "038bc63d-4b7a-43c7-90e2-3dc2501c2a9f",
+		"name": "Management_voucher'",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36321276"
+	},
+	"item": [{
+			"name": "Create Voucher",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [{
+						"key": "token",
+						"value": "B3D6qfKHKUZFZEgILUC9ichlFFkr34fikvnWq1oT1b49881e",
+						"type": "string"
+					}]
+				},
+				"method": "POST",
+				"header": [{
+					"key": "",
+					"value": "",
+					"type": "text"
+				}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"voucher_name\": \"PROMO GAJIAN\",\n  \"voucher_code\": \"DESCERIA51\",\n  \"voucher_type\": \"redeem points\",\n  \"points_required\": 220,\n  \"description\": \"10% off for purchases above 200.000\",\n  \"voucher_category\": \"Free Shipping\",\n  \"discount_value\": 10.0,\n  \"minimum_purchase\": 200000.0,\n  \"payment_methods\": [\"Credit Card\"],\n  \"start_date\": \"2024-12-01T00:00:00Z\",\n  \"end_date\": \"2024-12-07T00:00:00Z\",\n  \"applicable_areas\": [\"Jawa\"],\n  \"quota\": 50,\n  \"status\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/vouchers/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"vouchers",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Voucher",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [{
+						"key": "token",
+						"value": "B3D6qfKHKUZFZEgILUC9ichlFFkr34fikvnWq1oT1b49881e",
+						"type": "string"
+					}]
+				},
+				"method": "PUT",
+				"header": [{
+					"key": "",
+					"value": "",
+					"type": "text"
+				}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"voucher_name\": \"ALL YOU CAN BUY\",\n  \"voucher_code\": \"DESCERIA2\",\n  \"voucher_type\": \"redeem points\",\n  \"points_required\": 231,\n  \"description\": \"10% off for purchases above 200.000\",\n  \"voucher_category\": \"Free Shipping\",\n  \"discount_value\": 10.0,\n  \"minimum_purchase\": 200000.0,\n  \"payment_methods\": [\"Credit Card\"],\n  \"start_date\": \"2024-12-01T00:00:00Z\",\n  \"end_date\": \"2024-12-07T00:00:00Z\",\n  \"applicable_areas\": [\"Sumatera\"],\n  \"quota\": 50\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/vouchers/14",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"vouchers",
+						"14"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Voucher",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [{
+						"key": "token",
+						"value": "B3D6qfKHKUZFZEgILUC9ichlFFkr34fikvnWq1oT1b49881e",
+						"type": "string"
+					}]
+				},
+				"method": "DELETE",
+				"header": [{
+					"key": "",
+					"value": "",
+					"type": "text"
+				}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"voucher_name\": \"10% Discount\",\n  \"voucher_code\": \"DESCERIA1\",\n  \"voucher_type\": \"e-commerce\",\n  \"points_required\": 0,\n  \"description\": \"10% off for purchases above $100\",\n  \"voucher_category\": \"Discount\",\n  \"discount_value\": 10000.0,\n  \"minimum_purchase\": 100000.0,\n  \"payment_methods\": [\"Credit Card\", \"PayPal\"],\n  \"start_date\": \"2024-11-01T00:00:00Z\",\n  \"end_date\": \"2024-11-30T00:00:00Z\",\n  \"applicable_areas\": [\"Jawa\", \"Sumatera\"],\n  \"quota\": 50\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/vouchers/14",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"vouchers",
+						"14"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Redeem Points",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [{
+						"key": "token",
+						"value": "B3D6qfKHKUZFZEgILUC9ichlFFkr34fikvnWq1oT1b49881e",
+						"type": "string"
+					}]
+				},
+				"method": "GET",
+				"header": [{
+					"key": "",
+					"value": "",
+					"type": "text"
+				}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"voucher_name\": \"10% Discount\",\n  \"voucher_code\": \"DESCERIA1\",\n  \"voucher_type\": \"e-commerce\",\n  \"points_required\": 0,\n  \"description\": \"10% off for purchases above $100\",\n  \"voucher_category\": \"Discount\",\n  \"discount_value\": 10000.0,\n  \"minimum_purchase\": 100000.0,\n  \"payment_methods\": [\"Credit Card\", \"PayPal\"],\n  \"start_date\": \"2024-11-01T00:00:00Z\",\n  \"end_date\": \"2024-11-30T00:00:00Z\",\n  \"applicable_areas\": [\"Jawa\", \"Sumatera\"],\n  \"quota\": 50\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/vouchers/reedem-points",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"vouchers",
+						"reedem-points"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Voucher",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [{
+						"key": "token",
+						"value": "B3D6qfKHKUZFZEgILUC9ichlFFkr34fikvnWq1oT1b49881e",
+						"type": "string"
+					}]
+				},
+				"method": "GET",
+				"header": [{
+					"key": "",
+					"value": "",
+					"type": "text"
+				}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"voucher_name\": \"10% Discount\",\n  \"voucher_code\": \"DESCERIA1\",\n  \"voucher_type\": \"e-commerce\",\n  \"points_required\": 0,\n  \"description\": \"10% off for purchases above $100\",\n  \"voucher_category\": \"Discount\",\n  \"discount_value\": 10000.0,\n  \"minimum_purchase\": 100000.0,\n  \"payment_methods\": [\"Credit Card\", \"PayPal\"],\n  \"start_date\": \"2024-11-01T00:00:00Z\",\n  \"end_date\": \"2024-11-30T00:00:00Z\",\n  \"applicable_areas\": [\"Jawa\", \"Sumatera\"],\n  \"quota\": 50\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/vouchers?status=non-active",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"vouchers"
+					],
+					"query": [{
+							"key": "status",
+							"value": "non-active",
+							"description": "active and non-active"
+						},
+						{
+							"key": "area",
+							"value": "Worldwide",
+							"disabled": true
+						},
+						{
+							"key": "voucher_type",
+							"value": "e-commerce",
+							"description": "e-commerce and redeem points",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Claim voucher",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [{
+						"key": "token",
+						"value": "B3D6qfKHKUZFZEgILUC9ichlFFkr34fikvnWq1oT1b49881e",
+						"type": "string"
+					}]
+				},
+				"method": "POST",
+				"header": [{
+					"key": "",
+					"value": "",
+					"type": "text"
+				}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"voucher_id\": 16,\n  \"user_id\": 123,\n  \"points\": 220\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/vouchers/redeem",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"vouchers",
+						"redeem"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
