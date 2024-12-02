@@ -10,6 +10,7 @@ import (
 	"time"
 	managementvoucherhandler "voucher_system/controller/management_voucher_handler"
 	"voucher_system/models"
+	managementvoucher "voucher_system/repository/management_voucher"
 	"voucher_system/service"
 	managementvoucherservice "voucher_system/service/management_voucher_service"
 
@@ -325,6 +326,90 @@ func TestUpdateVoucher(t *testing.T) {
 
 		// Assert the JSON Response Body
 		expectedResponse := `{"error_msg":"FAILED", "message":"Failed to Updated Voucher", "status":false}`
+		assert.JSONEq(t, expectedResponse, w.Body.String())
+	})
+}
+
+func TestShowRedeemPoints(t *testing.T) {
+	// Setup logger
+	log := *zap.NewNop()
+
+	t.Run("Successfully retrieve redeem points", func(t *testing.T) {
+		// Mock Service
+		mockService := &managementvoucherservice.ManagementVoucherServiceMock{}
+		service := service.Service{
+			Manage: mockService,
+		}
+		handler := managementvoucherhandler.NewManagementVoucherHanlder(service, &log)
+
+		// Router and Endpoint
+		r := gin.Default()
+		r.GET("/vouchers/redeem-points", handler.ShowRedeemPoints)
+
+		// Mock Data
+		mockRedeemPoints := []managementvoucher.RedeemPoint{
+			{
+				VoucherName:    "Discount 10%",
+				PointsRequired: 100,
+				DiscountValue:  10.0,
+			},
+			{
+				VoucherName:    "Discount 20%",
+				PointsRequired: 200,
+				DiscountValue:  20.0,
+			},
+		}
+
+		// Mock Response
+		mockService.On("ShowRedeemPoints").Return(&mockRedeemPoints, nil)
+
+		// Perform Request
+		req := httptest.NewRequest(http.MethodGet, "/vouchers/redeem-points", nil)
+		w := httptest.NewRecorder()
+
+		// Call the Handler
+		r.ServeHTTP(w, req)
+
+		// Assert the Response
+		assert.Equal(t, http.StatusOK, w.Code)
+		mockService.AssertCalled(t, "ShowRedeemPoints")
+
+		// Assert the JSON Response Body
+		var actualResponse map[string]interface{}
+		err := json.Unmarshal(w.Body.Bytes(), &actualResponse)
+		assert.NoError(t, err)
+		assert.Equal(t, "Redeem points retrieved successfully", actualResponse["message"])
+		assert.True(t, actualResponse["status"].(bool))
+	})
+
+	t.Run("Fail to retrieve redeem points due to service error", func(t *testing.T) {
+		// Mock Service
+		mockService := &managementvoucherservice.ManagementVoucherServiceMock{}
+		service := service.Service{
+			Manage: mockService,
+		}
+		handler := managementvoucherhandler.NewManagementVoucherHanlder(service, &log)
+
+		// Router and Endpoint
+		r := gin.Default()
+		r.GET("/vouchers/redeem-points", handler.ShowRedeemPoints)
+
+		// Mock Response
+		mockService.On("ShowRedeemPoints").Return(nil, fmt.Errorf("failed to retrieve redeem points"))
+
+		// Perform Request
+		req := httptest.NewRequest(http.MethodGet, "/vouchers/redeem-points", nil)
+		w := httptest.NewRecorder()
+
+		// Call the Handler
+		r.ServeHTTP(w, req)
+
+		// Assert the Response
+		assert.Equal(t, http.StatusNotFound, w.Code)
+		mockService.AssertCalled(t, "ShowRedeemPoints")
+
+		// Assert the JSON Response Body
+		expectedResponse := `{"error_msg":"NOT FOUND", "message":"Reedem Points List Not Found", "status":false}`
 		assert.JSONEq(t, expectedResponse, w.Body.String())
 	})
 }
