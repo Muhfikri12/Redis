@@ -67,7 +67,7 @@
                 }
             }
         },
-        "/vouchers/reedem-points": {
+        "/vouchers": {
             "get": {
                 "security": [
                     {
@@ -77,7 +77,7 @@
                         "id_key": []
                     }
                 ],
-                "description": "List Redeem Points.",
+                "description": "List Get Voucher By Query Param.",
                 "consumes": [
                     "application/json"
                 ],
@@ -85,18 +85,487 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Redeem Points"
+                    "Get Voucher By Query Param"
                 ],
-                "summary": "Redeem Points",
+                "summary": "Get Voucher By Query Param",
                 "responses": {
                     "200": {
-                        "description": "successfully retrieved Redeem Points",
+                        "description": "successfully retrieved Voucher",
                         "schema": {
                             "$ref": "#/definitions/helper.HTTPResponse"
                         }
                     },
                     "404": {
-                        "description": "Redeem Points not found",
+                        "description": "Voucher not found",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    },
+                    {
+                        "id_key": []
+                    }
+                ],
+                "description": "Feature Use Voucher",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Use Voucher"
+                ],
+                "summary": "Use Voucher",
+                "responses": {
+                    "200": {
+                        "description": "Success response",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/vouchers/:id": {
+            "put": {
+                "security": [
+                    {
+                        "token": []
+                    },
+                    {
+                        "id_key": []
+                    }
+                ],
+                "description": "Feature to update a voucher",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Update Voucher"
+                ],
+                "summary": "Update Voucher",
+                "responses": {
+                    "200": {
+                        "description": "Success response with voucher data",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "token": []
+                    },
+                    {
+                        "id_key": []
+                    }
+                ],
+                "description": "Feature to delete a voucher",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Soft Deletes"
+                ],
+                "summary": "Soft Deletes",
+                "responses": {
+                    "200": {
+                        "description": "Success response with voucher data",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/vouchers/:user_id": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    },
+                    {
+                        "id_key": []
+                    }
+                ],
+                "description": "Feature Find Voucher",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Find Voucher"
+                ],
+                "summary": "Find Voucher",
+                "responses": {
+                    "200": {
+                        "description": "Success response",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/vouchers/:user_id/validate": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    },
+                    {
+                        "id_key": []
+                    }
+                ],
+                "description": "Feature Validate Voucher",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Validate Voucher"
+                ],
+                "summary": "Validate Voucher",
+                "responses": {
+                    "200": {
+                        "description": "Success response",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/vouchers/create": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    },
+                    {
+                        "id_key": []
+                    }
+                ],
+                "description": "Feature to create a voucher",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Create Voucher"
+                ],
+                "summary": "Create Voucher",
+                "responses": {
+                    "200": {
+                        "description": "Success response with voucher data",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/vouchers/redeem": {
+            "post": {
+                "security": [
+                    {
+                        "token": []
+                    },
+                    {
+                        "id_key": []
+                    }
+                ],
+                "description": "Feature to create a voucher",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Create Voucher"
+                ],
+                "summary": "Create Voucher",
+                "responses": {
+                    "200": {
+                        "description": "Success response with voucher data",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/vouchers/redeem-history/:user_id": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    },
+                    {
+                        "id_key": []
+                    }
+                ],
+                "description": "Feature Get Redeem History",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Get Redeem History"
+                ],
+                "summary": "Get Redeem History",
+                "responses": {
+                    "200": {
+                        "description": "Success response",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/vouchers/redeem-points": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    },
+                    {
+                        "id_key": []
+                    }
+                ],
+                "description": "List Show Redeem Points.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Show Redeem Points"
+                ],
+                "summary": "Show Redeem Points",
+                "responses": {
+                    "200": {
+                        "description": "successfully retrieved Voucher",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Voucher not found",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/vouchers/usage-history/:user_id": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    },
+                    {
+                        "id_key": []
+                    }
+                ],
+                "description": "Feature Get Usage Users History",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Get Usage Users History"
+                ],
+                "summary": "Get Usage Users History",
+                "responses": {
+                    "200": {
+                        "description": "Success response with voucher data",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/vouchers/users-by-voucher/:voucher_code": {
+            "get": {
+                "security": [
+                    {
+                        "token": []
+                    },
+                    {
+                        "id_key": []
+                    }
+                ],
+                "description": "Feature Get User By Voucher Code",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Get User By Voucher Code"
+                ],
+                "summary": "Get User By Voucher Code",
+                "responses": {
+                    "200": {
+                        "description": "Success response",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
                         "schema": {
                             "$ref": "#/definitions/helper.HTTPResponse"
                         }

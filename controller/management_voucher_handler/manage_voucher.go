@@ -29,6 +29,18 @@ func NewManagementVoucherHanlder(service service.Service, log *zap.Logger) Manag
 	return &ManagementVoucherHandler{service: service, log: log}
 }
 
+// Create Voucher endpoint
+// @Summary Create Voucher
+// @Description Feature to create a voucher
+// @Tags Create Voucher
+// @Accept json
+// @Produce json
+// @Success 200 {object} helper.HTTPResponse "Success response with voucher data"
+// @Failure 400 {object} helper.HTTPResponse "Bad request error"
+// @Failure 500 {object} helper.HTTPResponse "Internal server error"
+// @Security token
+// @Security id_key
+// @Router /vouchers/create [post]
 func (mh *ManagementVoucherHandler) CreateVoucher(c *gin.Context) {
 
 	voucher := models.Voucher{}
@@ -51,6 +63,18 @@ func (mh *ManagementVoucherHandler) CreateVoucher(c *gin.Context) {
 	helper.ResponseOK(c, voucher, "Created succesfully")
 }
 
+// Soft Deletes endpoint
+// @Summary Soft Deletes
+// @Description Feature to delete a voucher
+// @Tags Soft Deletes
+// @Accept json
+// @Produce json
+// @Success 200 {object} helper.HTTPResponse "Success response with voucher data"
+// @Failure 400 {object} helper.HTTPResponse "Bad request error"
+// @Failure 500 {object} helper.HTTPResponse "Internal server error"
+// @Security token
+// @Security id_key
+// @Router /vouchers/:id [delete]
 func (mh *ManagementVoucherHandler) SoftDeleteVoucher(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
@@ -65,6 +89,18 @@ func (mh *ManagementVoucherHandler) SoftDeleteVoucher(c *gin.Context) {
 	helper.ResponseOK(c, id, "Deleted succesfully")
 }
 
+// Update Voucher endpoint
+// @Summary Update Voucher
+// @Description Feature to update a voucher
+// @Tags Update Voucher
+// @Accept json
+// @Produce json
+// @Success 200 {object} helper.HTTPResponse "Success response with voucher data"
+// @Failure 400 {object} helper.HTTPResponse "Bad request error"
+// @Failure 500 {object} helper.HTTPResponse "Internal server error"
+// @Security token
+// @Security id_key
+// @Router /vouchers/:id [put]
 func (mh *ManagementVoucherHandler) UpdateVoucher(c *gin.Context) {
 
 	id, _ := strconv.Atoi(c.Param("id"))
@@ -87,6 +123,18 @@ func (mh *ManagementVoucherHandler) UpdateVoucher(c *gin.Context) {
 	helper.ResponseOK(c, id, "updated succesfully")
 }
 
+// Show Redeem Points endpoint
+// @Summary Show Redeem Points
+// @Description List Show Redeem Points.
+// @Tags Show Redeem Points
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} helper.HTTPResponse "successfully retrieved Voucher"
+// @Failure 404 {object} helper.HTTPResponse "Voucher not found"
+// @Failure 500 {object} helper.HTTPResponse "Internal server error"
+// @Security token
+// @Security id_key
+// @Router  /vouchers/redeem-points [get]
 func (mh *ManagementVoucherHandler) ShowRedeemPoints(c *gin.Context) {
 
 	voucher, err := mh.service.Manage.ShowRedeemPoints()
@@ -101,18 +149,18 @@ func (mh *ManagementVoucherHandler) ShowRedeemPoints(c *gin.Context) {
 
 }
 
-// Redeem Points endpoint
-// @Summary Redeem Points
-// @Description List Redeem Points.
-// @Tags Redeem Points
+// Get Voucher By Query Param endpoint
+// @Summary Get Voucher By Query Param
+// @Description List Get Voucher By Query Param.
+// @Tags Get Voucher By Query Param
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} helper.HTTPResponse "successfully retrieved Redeem Points"
-// @Failure 404 {object} helper.HTTPResponse "Redeem Points not found"
+// @Success 200 {object} helper.HTTPResponse "successfully retrieved Voucher"
+// @Failure 404 {object} helper.HTTPResponse "Voucher not found"
 // @Failure 500 {object} helper.HTTPResponse "Internal server error"
 // @Security token
 // @Security id_key
-// @Router  /vouchers/reedem-points [get]
+// @Router  /vouchers [get]
 func (mh *ManagementVoucherHandler) GetVouchersByQueryParams(c *gin.Context) {
 
 	status := c.Query("status")
@@ -131,6 +179,18 @@ func (mh *ManagementVoucherHandler) GetVouchersByQueryParams(c *gin.Context) {
 
 }
 
+// Create Voucher endpoint
+// @Summary Create Voucher
+// @Description Feature to create a voucher
+// @Tags Create Voucher
+// @Accept json
+// @Produce json
+// @Success 200 {object} helper.HTTPResponse "Success response with voucher data"
+// @Failure 400 {object} helper.HTTPResponse "Bad request error"
+// @Failure 500 {object} helper.HTTPResponse "Internal server error"
+// @Security token
+// @Security id_key
+// @Router /vouchers/redeem [post]
 func (mh *ManagementVoucherHandler) CreateRedeemVoucher(c *gin.Context) {
 	var payload struct {
 		VoucherID int `json:"voucher_id" binding:"required"`
@@ -141,7 +201,7 @@ func (mh *ManagementVoucherHandler) CreateRedeemVoucher(c *gin.Context) {
 	err := c.ShouldBindJSON(&payload)
 	if err != nil {
 		mh.log.Error("Invalid payload", zap.Error(err))
-		helper.ResponseError(c, "INVALID", "Invalid Payload: "+err.Error(), http.StatusBadRequest)
+		helper.ResponseError(c, "INVALID", "Invalid Payload: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -153,7 +213,7 @@ func (mh *ManagementVoucherHandler) CreateRedeemVoucher(c *gin.Context) {
 	err = mh.service.Manage.CreateRedeemVoucher(&redeem, payload.Points)
 	if err != nil {
 		mh.log.Error("Failed to create redeem voucher", zap.Error(err))
-		helper.ResponseError(c, "FAILED", "Failed to create redeem voucher: "+err.Error(), http.StatusInternalServerError)
+		helper.ResponseError(c, "FAILED", "Failed to create redeem voucher: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 

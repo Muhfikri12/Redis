@@ -52,3 +52,4 @@
 {"L":"INFO","T":"2024-12-03T14:33:04.386+0700","M":"Logger initialized successfully"}
 {"L":"INFO","T":"2024-12-03T14:34:17.537+0700","M":"Saving token to Redis","IDKEY":"fikri","token":"e2d9319b-baf9-49db-88f4-2fd197e147e8"}
 {"L":"INFO","T":"2024-12-03T14:35:00.923+0700","M":"Redeem points retrieved successfully"}
+{"L":"INFO","T":"2024-12-03T20:21:15.306+0700","M":"Logger initialized successfully"}

@@ -64,20 +64,20 @@ paths:
       summary: Login feature
       tags:
       - login
-  /vouchers/reedem-points:
+  /vouchers:
     get:
       consumes:
       - application/json
-      description: List Redeem Points.
+      description: List Get Voucher By Query Param.
       produces:
       - application/json
       responses:
         "200":
-          description: successfully retrieved Redeem Points
+          description: successfully retrieved Voucher
           schema:
             $ref: '#/definitions/helper.HTTPResponse'
         "404":
-          description: Redeem Points not found
+          description: Voucher not found
           schema:
             $ref: '#/definitions/helper.HTTPResponse'
         "500":
@@ -87,9 +87,293 @@ paths:
       security:
       - token: []
       - id_key: []
-      summary: Redeem Points
+      summary: Get Voucher By Query Param
       tags:
-      - Redeem Points
+      - Get Voucher By Query Param
+    post:
+      consumes:
+      - application/json
+      description: Feature Use Voucher
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      security:
+      - token: []
+      - id_key: []
+      summary: Use Voucher
+      tags:
+      - Use Voucher
+  /vouchers/:id:
+    delete:
+      consumes:
+      - application/json
+      description: Feature to delete a voucher
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with voucher data
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      security:
+      - token: []
+      - id_key: []
+      summary: Soft Deletes
+      tags:
+      - Soft Deletes
+    put:
+      consumes:
+      - application/json
+      description: Feature to update a voucher
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with voucher data
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      security:
+      - token: []
+      - id_key: []
+      summary: Update Voucher
+      tags:
+      - Update Voucher
+  /vouchers/:user_id:
+    get:
+      consumes:
+      - application/json
+      description: Feature Find Voucher
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      security:
+      - token: []
+      - id_key: []
+      summary: Find Voucher
+      tags:
+      - Find Voucher
+  /vouchers/:user_id/validate:
+    get:
+      consumes:
+      - application/json
+      description: Feature Validate Voucher
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      security:
+      - token: []
+      - id_key: []
+      summary: Validate Voucher
+      tags:
+      - Validate Voucher
+  /vouchers/create:
+    post:
+      consumes:
+      - application/json
+      description: Feature to create a voucher
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with voucher data
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      security:
+      - token: []
+      - id_key: []
+      summary: Create Voucher
+      tags:
+      - Create Voucher
+  /vouchers/redeem:
+    post:
+      consumes:
+      - application/json
+      description: Feature to create a voucher
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with voucher data
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      security:
+      - token: []
+      - id_key: []
+      summary: Create Voucher
+      tags:
+      - Create Voucher
+  /vouchers/redeem-history/:user_id:
+    get:
+      consumes:
+      - application/json
+      description: Feature Get Redeem History
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      security:
+      - token: []
+      - id_key: []
+      summary: Get Redeem History
+      tags:
+      - Get Redeem History
+  /vouchers/redeem-points:
+    get:
+      consumes:
+      - application/json
+      description: List Show Redeem Points.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully retrieved Voucher
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "404":
+          description: Voucher not found
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      security:
+      - token: []
+      - id_key: []
+      summary: Show Redeem Points
+      tags:
+      - Show Redeem Points
+  /vouchers/usage-history/:user_id:
+    get:
+      consumes:
+      - application/json
+      description: Feature Get Usage Users History
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with voucher data
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      security:
+      - token: []
+      - id_key: []
+      summary: Get Usage Users History
+      tags:
+      - Get Usage Users History
+  /vouchers/users-by-voucher/:voucher_code:
+    get:
+      consumes:
+      - application/json
+      description: Feature Get User By Voucher Code
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Bad request error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      security:
+      - token: []
+      - id_key: []
+      summary: Get User By Voucher Code
+      tags:
+      - Get User By Voucher Code
 schemes:
 - http
 securityDefinitions:

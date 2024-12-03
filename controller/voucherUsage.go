@@ -20,6 +20,18 @@ func NewVoucherController(service service.Service, log *zap.Logger) *VoucherCont
 	return &VoucherController{service: service, log: log}
 }
 
+// Find Voucher endpoint
+// @Summary Find Voucher
+// @Description Feature Find Voucher
+// @Tags Find Voucher
+// @Accept json
+// @Produce json
+// @Success 200 {object} helper.HTTPResponse "Success response"
+// @Failure 400 {object} helper.HTTPResponse "Bad request error"
+// @Failure 500 {object} helper.HTTPResponse "Internal server error"
+// @Security token
+// @Security id_key
+// @Router /vouchers/:user_id [get]
 func (c *VoucherController) FindVouchers(ctx *gin.Context) {
 	userID, err := strconv.Atoi(ctx.Param("user_id"))
 	if err != nil {
@@ -47,6 +59,18 @@ func (c *VoucherController) FindVouchers(ctx *gin.Context) {
 	helper.ResponseOK(ctx, result, "")
 }
 
+// Validate Voucher endpoint
+// @Summary Validate Voucher
+// @Description Feature Validate Voucher
+// @Tags Validate Voucher
+// @Accept json
+// @Produce json
+// @Success 200 {object} helper.HTTPResponse "Success response"
+// @Failure 400 {object} helper.HTTPResponse "Bad request error"
+// @Failure 500 {object} helper.HTTPResponse "Internal server error"
+// @Security token
+// @Security id_key
+// @Router /vouchers/:user_id/validate [get]
 func (c *VoucherController) ValidateVoucher(ctx *gin.Context) {
 	userID, err := strconv.Atoi(ctx.Param("user_id"))
 	if err != nil {
@@ -97,6 +121,18 @@ func (c *VoucherController) ValidateVoucher(ctx *gin.Context) {
 	helper.ResponseOK(ctx, response, "Voucher is valid")
 }
 
+// Use Voucher endpoint
+// @Summary Use Voucher
+// @Description Feature Use Voucher
+// @Tags Use Voucher
+// @Accept json
+// @Produce json
+// @Success 200 {object} helper.HTTPResponse "Success response"
+// @Failure 400 {object} helper.HTTPResponse "Bad request error"
+// @Failure 500 {object} helper.HTTPResponse "Internal server error"
+// @Security token
+// @Security id_key
+// @Router /vouchers [post]
 func (c *VoucherController) UseVoucher(ctx *gin.Context) {
 	var request struct {
 		UserID            int     `json:"user_id"`
