@@ -4,13 +4,18 @@ import (
 	"voucher_system/infra"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 	r := gin.Default()
 
+	r.POST("/login", ctx.Ctl.Auth.Login)
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router := r.Group("/vouchers")
 	{
+		router.Use(ctx.Middleware.Authentication())
 		router.POST("/create", ctx.Ctl.Manage.CreateVoucher)
 		router.DELETE("/:id", ctx.Ctl.Manage.SoftDeleteVoucher)
 		router.PUT("/:id", ctx.Ctl.Manage.UpdateVoucher)

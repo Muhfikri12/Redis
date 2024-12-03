@@ -7,12 +7,19 @@ import (
 )
 
 type Config struct {
-	DBHost     string
-	DBPort     string
-	DBUser     string
-	DBPassword string
-	DBName     string
-	AppDebug   bool
+	DBHost      string
+	DBPort      string
+	DBUser      string
+	DBPassword  string
+	DBName      string
+	AppDebug    bool
+	RedisConfig RedisConfig
+}
+
+type RedisConfig struct {
+	Url      string
+	Password string
+	Prefix   string
 }
 
 func LoadConfig() (Config, error) {
@@ -25,7 +32,7 @@ func LoadConfig() (Config, error) {
 	viper.SetDefault("DBHost", "localhost")
 	viper.SetDefault("DBPort", "5432")
 	viper.SetDefault("DBUser", "user")
-	viper.SetDefault("DBPassword", "password")
+	viper.SetDefault("DBPassword", "admin")
 	viper.SetDefault("DBName", "database")
 	viper.SetDefault("AppDebug", true)
 
@@ -45,7 +52,12 @@ func LoadConfig() (Config, error) {
 		DBUser:     viper.GetString("DB_USER"),
 		DBPassword: viper.GetString("DB_PASSWORD"),
 		DBName:     viper.GetString("DB_NAME"),
-		AppDebug:   viper.GetBool("APP_DEBUG"),
+		AppDebug:   viper.GetBool("DEBUG"),
+		RedisConfig: RedisConfig{
+			Url:      viper.GetString("REDIS_URL"),
+			Password: viper.GetString("REDIS_PASSWORD"),
+			Prefix:   viper.GetString("REDIS_PREFIX"),
+		},
 	}
 
 	return config, nil

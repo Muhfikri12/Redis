@@ -11,6 +11,8 @@ func Migrate(db *gorm.DB) error {
 		&models.Voucher{},
 		&models.Redeem{},
 		&models.History{},
+		&models.User{},
+		&models.Session{},
 	)
 
 	return err

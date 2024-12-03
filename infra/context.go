@@ -5,6 +5,7 @@ import (
 	"voucher_system/controller"
 	"voucher_system/database"
 	"voucher_system/helper"
+	"voucher_system/middleware"
 	"voucher_system/repository"
 	"voucher_system/service"
 
@@ -13,10 +14,13 @@ import (
 )
 
 type ServiceContext struct {
-	Cfg config.Config
-	DB  *gorm.DB
-	Ctl controller.Controller
-	Log *zap.Logger
+	Cfg        config.Config
+	Config     config.Config
+	DB         *gorm.DB
+	Ctl        controller.Controller
+	Log        *zap.Logger
+	Cacher     database.Cacher
+	Middleware middleware.Middleware
 }
 
 func NewServiceContext() (*ServiceContext, error) {
@@ -25,32 +29,30 @@ func NewServiceContext() (*ServiceContext, error) {
 		return nil, err
 	}
 
-	// instance config
 	config, err := config.LoadConfig()
 	if err != nil {
 		handlerError(err)
 	}
 
-	// instance looger
 	log, err := helper.InitZapLogger(config)
 	if err != nil {
 		handlerError(err)
 	}
 
-	// instance database
 	db, err := database.ConnectDB(config)
 	if err != nil {
 		handlerError(err)
 	}
 
-	// instance repository
+	rdb := database.NewCacher(config, 60*5)
+
 	repository := repository.NewRepository(db, log)
 
-	// instance service
 	service := service.NewService(repository, log)
 
-	// instance controller
-	Ctl := controller.NewController(service, log)
+	Ctl := controller.NewController(service, log, rdb)
 
-	return &ServiceContext{Cfg: config, DB: db, Ctl: *Ctl, Log: log}, nil
+	middleware := middleware.NewMiddleware(rdb)
+
+	return &ServiceContext{Cfg: config, DB: db, Ctl: *Ctl, Log: log, Middleware: middleware}, nil
 }

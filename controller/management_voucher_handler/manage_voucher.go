@@ -101,6 +101,18 @@ func (mh *ManagementVoucherHandler) ShowRedeemPoints(c *gin.Context) {
 
 }
 
+// Redeem Points endpoint
+// @Summary Redeem Points
+// @Description List Redeem Points.
+// @Tags Redeem Points
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} helper.HTTPResponse "successfully retrieved Redeem Points"
+// @Failure 404 {object} helper.HTTPResponse "Redeem Points not found"
+// @Failure 500 {object} helper.HTTPResponse "Internal server error"
+// @Security token
+// @Security id_key
+// @Router  /vouchers/reedem-points [get]
 func (mh *ManagementVoucherHandler) GetVouchersByQueryParams(c *gin.Context) {
 
 	status := c.Query("status")

@@ -1,0 +1,54 @@
+{"L":"INFO","T":"2024-12-03T07:00:51.620+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T07:16:10.837+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T07:16:36.225+0700","M":"Voucher retrieved successfully"}
+{"L":"INFO","T":"2024-12-03T07:17:26.726+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T07:42:14.661+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T08:04:35.235+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T08:09:39.066+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T08:51:40.866+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T08:56:13.505+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T08:56:19.263+0700","M":"Saving token to Redis","IDKEY":"username-1","token":"2323232"}
+{"L":"INFO","T":"2024-12-03T09:00:13.086+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T09:00:21.170+0700","M":"Saving token to Redis","IDKEY":"username-1","token":"2323232"}
+{"L":"INFO","T":"2024-12-03T09:02:22.578+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T09:10:56.860+0700","M":"Saving token to Redis","IDKEY":"username-1","token":"2323232"}
+{"L":"INFO","T":"2024-12-03T09:11:36.506+0700","M":"Voucher retrieved successfully"}
+{"L":"INFO","T":"2024-12-03T09:13:48.621+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T09:13:56.095+0700","M":"Saving token to Redis","IDKEY":"username-1","token":"2323232"}
+{"L":"INFO","T":"2024-12-03T09:14:01.284+0700","M":"Voucher retrieved successfully"}
+{"L":"INFO","T":"2024-12-03T09:30:11.043+0700","M":"Saving token to Redis","IDKEY":"username-1","token":"2323232"}
+{"L":"INFO","T":"2024-12-03T09:30:36.956+0700","M":"Voucher retrieved successfully"}
+{"L":"INFO","T":"2024-12-03T12:06:44.978+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T12:24:45.077+0700","M":"Saving token to Redis","IDKEY":"fikri","token":"c1db0e0a-98fd-4575-8039-710572228546"}
+{"L":"INFO","T":"2024-12-03T12:25:34.077+0700","M":"Voucher retrieved successfully"}
+{"L":"INFO","T":"2024-12-03T12:25:44.659+0700","M":"Voucher retrieved successfully"}
+{"L":"INFO","T":"2024-12-03T13:12:23.244+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T13:24:53.821+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T13:27:02.039+0700","M":"Logger initialized successfully"}
+{"L":"ERROR","T":"2024-12-03T13:27:25.630+0700","M":"Failed to Logininvalid email or password","error":"invalid email or password"}
+{"L":"ERROR","T":"2024-12-03T13:27:27.568+0700","M":"Failed to Logininvalid email or password","error":"invalid email or password"}
+{"L":"INFO","T":"2024-12-03T13:28:27.004+0700","M":"Saving token to Redis","IDKEY":"fikri","token":"cfd0a9fd-93fb-46a4-92a8-5207d7cbcae8"}
+{"L":"INFO","T":"2024-12-03T13:40:06.449+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T13:44:13.892+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T13:45:03.461+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T13:52:01.365+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T13:54:05.870+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T13:55:58.764+0700","M":"Saving token to Redis","IDKEY":"fikri","token":"30f63231-e92f-49e6-a8de-cbf2f0d7aa1a"}
+{"L":"INFO","T":"2024-12-03T13:55:59.944+0700","M":"Saving token to Redis","IDKEY":"fikri","token":"0b377745-943b-49e4-abf7-09c72a96d081"}
+{"L":"INFO","T":"2024-12-03T13:58:03.849+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T13:58:44.388+0700","M":"Saving token to Redis","IDKEY":"fikri","token":"707e8c1a-b0bf-41f5-bea3-a82160c547bd"}
+{"L":"INFO","T":"2024-12-03T13:58:45.516+0700","M":"Saving token to Redis","IDKEY":"fikri","token":"07a43354-80ef-46f1-bd80-3803674f898e"}
+{"L":"INFO","T":"2024-12-03T14:01:11.618+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T14:02:27.140+0700","M":"Saving token to Redis","IDKEY":"fikri","token":"5c52ea43-cfbc-4dc8-9783-3dea8855b8e8"}
+{"L":"INFO","T":"2024-12-03T14:02:28.348+0700","M":"Saving token to Redis","IDKEY":"fikri","token":"d0c66682-04f6-4c80-92cd-bce9f626a80a"}
+{"L":"INFO","T":"2024-12-03T14:03:16.923+0700","M":"Saving token to Redis","IDKEY":"fikri","token":"1e269b6b-c3e3-4a90-af6d-b140400707ee"}
+{"L":"INFO","T":"2024-12-03T14:03:51.823+0700","M":"Voucher retrieved successfully"}
+{"L":"INFO","T":"2024-12-03T14:06:07.994+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T14:06:48.547+0700","M":"Saving token to Redis","IDKEY":"fikri","token":"c050bf2f-6305-48bb-86dc-30a514114b80"}
+{"L":"INFO","T":"2024-12-03T14:19:01.749+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T14:24:44.170+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T14:27:02.721+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T14:27:31.429+0700","M":"Saving token to Redis","IDKEY":"fikri","token":"6a31539d-f5ac-4c12-af73-5df0def736e6"}
+{"L":"INFO","T":"2024-12-03T14:33:04.386+0700","M":"Logger initialized successfully"}
+{"L":"INFO","T":"2024-12-03T14:34:17.537+0700","M":"Saving token to Redis","IDKEY":"fikri","token":"e2d9319b-baf9-49db-88f4-2fd197e147e8"}
+{"L":"INFO","T":"2024-12-03T14:35:00.923+0700","M":"Redeem points retrieved successfully"}
